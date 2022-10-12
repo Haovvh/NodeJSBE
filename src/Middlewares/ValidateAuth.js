@@ -13,7 +13,6 @@ const ValidatedAuth = (req, res, next) => {
             errors : errors.mapped()
         });
     }
-
     next();
 
 }
