@@ -1,6 +1,6 @@
 
 const {response, request} = require('express');
-const connet = require('../DataBase/DataBase');
+const MySql = require('../DB/MySql');
 const bcrypt = require('bcrypt');
 const { generarJsonWebToken } = require('../Helpers/JWToken');
 
@@ -11,7 +11,7 @@ const LoginUsuario = async ( req = request, res = response ) => {
 
    try {
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const existsEmail = await conn.query('SELECT id, email, passwordd FROM users WHERE email = ? LIMIT 1', [ email ]);
 

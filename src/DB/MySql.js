@@ -2,7 +2,7 @@
 const { createPool } = require('mysql2/promise');
 
 
-module.exports = connect = async () => {
+module.exports = MySql = async () => {
 
     const connection = await createPool({
         host: 'localhost',

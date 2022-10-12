@@ -3,7 +3,7 @@ const { request, response } = require('express');
 const fs = require('fs-extra');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const connect = require('../DataBase/DataBase');
+const MySql = require('../DB/MySql');
 
 
 const addNewUser = async (req = request, res = response) => {
@@ -13,7 +13,7 @@ const addNewUser = async (req = request, res = response) => {
     const salt = bcrypt.genSaltSync();
     const pass = bcrypt.hashSync( passwordd, salt );
 
-    const conn = await connect();
+    const conn = await MySql();
 
     const hasEmail = await conn.query('SELECT email FROM users WHERE email = ?', [email]);
 
@@ -41,7 +41,7 @@ const getUserById = async (req = request, res = response ) => {
 
     try {
 
-        const conn = await connect();
+        const conn = await MySql();
 
         const userdb = await conn.query(`CALL SP_GET_USER_BY_ID(?);`, [ req.uidPerson ]);
 
@@ -66,7 +66,7 @@ const changeFotoProfile = async ( req = request, res = response ) => {
 
     try {
 
-        const conn = await connect();
+        const conn = await MySql();
 
         const rows = await conn.query('SELECT image FROM person WHERE uid = ?', [ req.uidPerson ]);
 
@@ -97,7 +97,7 @@ const updateInformationUser = async ( req = request, res = response ) => {
 
         const { firstname, lastname, phone, address, reference } = req.body;
 
-        const conn = await connect();
+        const conn = await MySql();
 
         await conn.query(`CALL SP_UPDATE_INFORMATION(?,?,?,?,?,?);`, [ req.uidPerson, firstname, lastname, phone, address, reference ]);
 
@@ -122,7 +122,7 @@ const updateStreetAddress = async ( req, res = response ) => {
 
         const { address, reference } = req.body;
         
-        const conn = await connect();
+        const conn = await MySql();
 
         await conn.query(`CALL SP_UPDATE_STREET(?,?,?);`, [ req.uidPerson, address, reference ]);
 

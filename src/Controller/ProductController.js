@@ -1,5 +1,5 @@
 const { response, request } = require('express');
-const connet = require('../DataBase/DataBase');
+const MySql = require('../DB/MySql');
 
 
 
@@ -7,7 +7,7 @@ const getProductsForHomeCarousel = async ( req = request, res = response ) => {
 
     try {
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const rows = await conn.query('SELECT * FROM Home_carousel');
 
@@ -32,7 +32,7 @@ const getListProductsHome = async (req = request, res = response) => {
 
     try {
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const products = await conn.query(`CALL SP_LIST_PRODUCTS_HOME(?);`,[ req.uidPerson ]);
 
@@ -58,7 +58,7 @@ const likeOrUnlikeProduct = async (req = request, res = response) => {
 
         const { uidProduct } = req.body;
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const isLike = await conn.query('SELECT COUNT(uidFavorite) isfavorite FROM favorite WHERE user_id = ? AND product_id = ?', [ req.uidPerson, uidProduct ]);
 
@@ -96,7 +96,7 @@ const getAllListCategories = async (req = request, res = response) => {
 
     try {
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const category = await conn.query('SELECT * FROM Category');
 
@@ -121,7 +121,7 @@ const productFavoriteForUser = async (req = request, res = response) => {
 
     try {
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const listProducts = await conn.query(`CALL SP_LIST_FAVORITE_PRODUCTS(?);`, [ req.uidPerson ]);
 
@@ -145,7 +145,7 @@ const getProductsForCategories = async (req = request, res = response) => {
 
     try {
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const products = await conn.query(`CALL SP_LIST_PRODUCTS_FOR_CATEGORY(?,?);`, [ req.params.idCategory, req.uidPerson ]); 
 
@@ -172,7 +172,7 @@ const saveOrderBuyProducts = async (req = request, res = response) => {
        
     const { receipt, amount, products  } = req.body;
 
-    const conn = await connet();
+    const conn = await MySql();
  
     const db = await conn.query('INSERT INTO orderBuy (user_id, receipt, amount) VALUES (?,?,?)', [ req.uidPerson, receipt, amount ]);
 
@@ -202,7 +202,7 @@ const addNewProduct = async (req = request, res = response) => {
 
         const { name, description, stock, price, uidCategory } = req.body;
 
-        const conn = await connet();
+        const conn = await MySql();
 
         await conn.query('INSERT INTO Products (nameProduct, description, codeProduct, stock, price, picture, category_id) VALUE (?,?,?,?,?,?,?)', 
             [ name, description, '000' + name, stock, price, req.file.filename, uidCategory ]);
@@ -226,7 +226,7 @@ const getAllPurchasedProducts = async ( req, res = response ) => {
 
     try {
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const orderbuy = await conn.query('SELECT * FROM orderBuy WHERE user_id = ?', [req.uidPerson]);
 
@@ -248,7 +248,7 @@ const getOrderDetailsProducts = async ( req, res = response ) => {
 
     try {
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const orderDetails = await conn.query(`CALL SP_ORDER_DETAILS(?);`, [req.params.uidOrder]);
 

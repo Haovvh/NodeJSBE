@@ -1,11 +1,11 @@
 const { response, request } = require('express');
-const connet = require('../DataBase/DataBase');
+const MySql = require('../DB/MySql');
 
 const getAllCategories = async ( req = request, res = response ) => {
 
     try {
 
-        const conn = await connet();
+        const conn = await MySql();
 
         const categories = await conn.query('SELECT * FROM Category');
 
