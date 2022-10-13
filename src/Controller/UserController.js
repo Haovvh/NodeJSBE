@@ -11,39 +11,39 @@ const addNewUser = async (req = request, res = response) => {
     const { username, email, passwordd } = req.body;
 
     const salt = bcrypt.genSaltSync();
-    const pass = bcrypt.hashSync( passwordd, salt );
+    const pass = bcrypt.hashSync(passwordd, salt);
 
     const conn = await MySql();
 
     const hasEmail = await conn.query('SELECT email FROM users WHERE email = ?', [email]);
 
-    if( hasEmail[0].length == 0 ){
+    if (hasEmail[0].length == 0) {
 
-        await conn.query(`CALL SP_REGISTER_USER(?,?,?);`, [ username, email, pass ]);
+        await conn.query(`CALL SP_REGISTER_USER(?,?,?);`, [username, email, pass]);
 
         conn.end();
 
         return res.json({
             resp: true,
-            message : 'Usuario ' + username +' fue creado con exito!'
+            message: 'Usuario ' + username + ' fue creado con exito!'
         });
-    
+
     } else {
         return res.json({
             resp: false,
-            message : 'Email already exists'
-        }); 
+            message: 'Email already exists'
+        });
     }
 
 }
 
-const getUserById = async (req = request, res = response ) => {
+const getUserById = async (req = request, res = response) => {
 
     try {
 
         const conn = await MySql();
 
-        const userdb = await conn.query(`CALL SP_GET_USER_BY_ID(?);`, [ req.uidPerson ]);
+        const userdb = await conn.query(`CALL SP_GET_USER_BY_ID(?);`, [req.uidPerson]);
 
         conn.end();
 
@@ -52,7 +52,7 @@ const getUserById = async (req = request, res = response ) => {
             message: 'Get user by Id',
             user: userdb[0][0][0]
         });
-        
+
     } catch (err) {
         return res.status(500).json({
             resp: false,
@@ -62,36 +62,36 @@ const getUserById = async (req = request, res = response ) => {
 
 }
 
-const changeFotoProfile = async ( req = request, res = response ) => {
+const changeFotoProfile = async (req = request, res = response) => {
 
     try {
 
         const conn = await MySql();
 
-        const rows = await conn.query('SELECT image FROM person WHERE uid = ?', [ req.uidPerson ]);
+        const rows = await conn.query('SELECT image FROM person WHERE uid = ?', [req.uidPerson]);
 
-        if( rows[0][0].image != null ){
+        if (rows[0][0].image != null) {
             await fs.unlink(path.resolve('src/Uploads/Profile/' + rows[0][0].image));
         }
 
-        await conn.query('UPDATE person SET image = ? WHERE uid = ?', [ req.file.filename, req.uidPerson ]);
+        await conn.query('UPDATE person SET image = ? WHERE uid = ?', [req.file.filename, req.uidPerson]);
 
         await conn.end();
-        
+
         return res.json({
             resp: true,
             message: 'Updated image'
         });
-        
+
     } catch (err) {
         return res.status(500).json({
             resp: false,
             message: err
-        }); 
+        });
     }
 }
 
-const updateInformationUser = async ( req = request, res = response ) => {
+const updateInformationUser = async (req = request, res = response) => {
 
     try {
 
@@ -99,7 +99,7 @@ const updateInformationUser = async ( req = request, res = response ) => {
 
         const conn = await MySql();
 
-        await conn.query(`CALL SP_UPDATE_INFORMATION(?,?,?,?,?,?);`, [ req.uidPerson, firstname, lastname, phone, address, reference ]);
+        await conn.query(`CALL SP_UPDATE_INFORMATION(?,?,?,?,?,?);`, [req.uidPerson, firstname, lastname, phone, address, reference]);
 
         await conn.end();
 
@@ -107,7 +107,7 @@ const updateInformationUser = async ( req = request, res = response ) => {
             resp: true,
             message: 'Infomation personal added'
         });
-        
+
     } catch (err) {
         return res.json({
             resp: false,
@@ -116,29 +116,29 @@ const updateInformationUser = async ( req = request, res = response ) => {
     }
 }
 
-const updateStreetAddress = async ( req, res = response ) => {
+const updateStreetAddress = async (req, res = response) => {
 
-   try {
+    try {
 
         const { address, reference } = req.body;
-        
+
         const conn = await MySql();
 
-        await conn.query(`CALL SP_UPDATE_STREET(?,?,?);`, [ req.uidPerson, address, reference ]);
+        await conn.query(`CALL SP_UPDATE_STREET(?,?,?);`, [req.uidPerson, address, reference]);
 
         await conn.end();
-        
+
         return res.json({
             resp: true,
             message: 'Street Address updated',
         });
-        
+
     } catch (err) {
-       return res.status(500).json({
-           resp: false,
-           message: err,
-       });
-   }
+        return res.status(500).json({
+            resp: false,
+            message: err,
+        });
+    }
 
 }
 
