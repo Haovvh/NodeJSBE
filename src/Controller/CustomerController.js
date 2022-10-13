@@ -3,7 +3,7 @@ const MySql = require('../DB/MySql');
 
 
 
-const getProductsForHomeCarousel = async (req = request, res = response) => {
+const getCustomer = async (req = request, res = response) => {
 
     try {
 
@@ -28,7 +28,7 @@ const getProductsForHomeCarousel = async (req = request, res = response) => {
 
 }
 
-const getListProductsHome = async (req = request, res = response) => {
+const getAllJourney = async (req = request, res = response) => {
 
     try {
 
@@ -52,151 +52,9 @@ const getListProductsHome = async (req = request, res = response) => {
     }
 }
 
-const likeOrUnlikeProduct = async (req = request, res = response) => {
-
-    try {
-
-        const { uidProduct } = req.body;
-
-        const conn = await MySql();
-
-        const isLike = await conn.query('SELECT COUNT(uidFavorite) isfavorite FROM favorite WHERE user_id = ? AND product_id = ?', [req.uidPerson, uidProduct]);
-
-        if (isLike[0][0].isfavorite > 0) {
-
-            await conn.query('DELETE FROM favorite WHERE user_id = ? AND product_id = ?', [req.uidPerson, uidProduct]);
-
-            await conn.end();
-
-            return res.json({
-                resp: true,
-                message: 'Unlike'
-            });
-        }
-
-        await conn.query('INSERT INTO favorite (user_id, product_id) VALUE (?,?)', [req.uidPerson, uidProduct]);
-
-        await conn.end();
-
-        return res.json({
-            resp: true,
-            message: 'Like'
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-
-}
-
-const getAllListCategories = async (req = request, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const category = await conn.query('SELECT * FROM Category');
-
-        await conn.end();
-
-        return res.json({
-            resp: true,
-            message: 'Get All List Categories',
-            categories: category[0]
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-
-}
-
-const productFavoriteForUser = async (req = request, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const listProducts = await conn.query(`CALL SP_LIST_FAVORITE_PRODUCTS(?);`, [req.uidPerson]);
-
-        await conn.end();
-
-        res.json({
-            resp: true,
-            message: 'List to products favorites',
-            listProducts: listProducts[0][0]
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-}
-
-const getProductsForCategories = async (req = request, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const products = await conn.query(`CALL SP_LIST_PRODUCTS_FOR_CATEGORY(?,?);`, [req.params.idCategory, req.uidPerson]);
-
-        await conn.end();
-
-        res.json({
-            resp: true,
-            message: 'List Products',
-            listProducts: products[0][0]
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-
-}
-
-const saveOrderBuyProducts = async (req = request, res = response) => {
-
-    try {
-
-        const { receipt, amount, products } = req.body;
-
-        const conn = await MySql();
-
-        const db = await conn.query('INSERT INTO orderBuy (user_id, receipt, amount) VALUES (?,?,?)', [req.uidPerson, receipt, amount]);
-
-        products.forEach(e => {
-            conn.query('INSERT INTO orderDetails (orderBuy_id, product_id, quantity, price) VALUES (?,?,?,?)', [db[0].insertId, e.uidProduct, e.amount, e.price]);
-        });
-
-        // await conn.end();
-
-        return res.json({
-            resp: true,
-            message: 'Products save'
-        });
 
 
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-}
-
-const addNewProduct = async (req = request, res = response) => {
+const postCustomer = async (req = request, res = response) => {
 
     try {
 
@@ -221,62 +79,70 @@ const addNewProduct = async (req = request, res = response) => {
         });
     }
 }
-
-const getAllPurchasedProducts = async (req, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const orderbuy = await conn.query('SELECT * FROM orderBuy WHERE user_id = ?', [req.uidPerson]);
-
-        await conn.end();
-
-        res.json({
-            resp: true,
-            msg: 'Get Puchased Products',
-            orderBuy: orderbuy[0],
-        });
-
-    } catch (err) {
-
-    }
-
-}
-
-const getOrderDetailsProducts = async (req, res = response) => {
+const putCustomer = async (req = request, res = response) => {
 
     try {
 
         const conn = await MySql();
 
-        const orderDetails = await conn.query(`CALL SP_ORDER_DETAILS(?);`, [req.params.uidOrder]);
+        const rows = await conn.query('SELECT image FROM person WHERE uid = ?', [req.uidPerson]);
+
+        if (rows[0][0].image != null) {
+            await fs.unlink(path.resolve('src/Uploads/Profile/' + rows[0][0].image));
+        }
+
+        await conn.query('UPDATE person SET image = ? WHERE uid = ?', [req.file.filename, req.uidPerson]);
 
         await conn.end();
 
-        res.json({
+        return res.json({
             resp: true,
-            msg: 'Get Puchased Products',
-            orderDetails: orderDetails[0][0],
+            message: 'Updated image'
         });
 
     } catch (err) {
-
+        return res.status(500).json({
+            resp: false,
+            message: err
+        });
     }
-
 }
+const putJourney = async (req = request, res = response) => {
+
+    try {
+
+        const conn = await MySql();
+
+        const rows = await conn.query('SELECT image FROM person WHERE uid = ?', [req.uidPerson]);
+
+        if (rows[0][0].image != null) {
+            await fs.unlink(path.resolve('src/Uploads/Profile/' + rows[0][0].image));
+        }
+
+        await conn.query('UPDATE person SET image = ? WHERE uid = ?', [req.file.filename, req.uidPerson]);
+
+        await conn.end();
+
+        return res.json({
+            resp: true,
+            message: 'Updated image'
+        });
+
+    } catch (err) {
+        return res.status(500).json({
+            resp: false,
+            message: err
+        });
+    }
+}
+
 
 
 
 module.exports = {
-    getProductsForHomeCarousel,
-    getListProductsHome,
-    likeOrUnlikeProduct,
-    getAllListCategories,
-    productFavoriteForUser,
-    saveOrderBuyProducts,
-    getProductsForCategories,
-    addNewProduct,
-    getAllPurchasedProducts,
-    getOrderDetailsProducts
+    getCustomer,
+    postCustomer,
+    putCustomer,
+    getAllJourney,
+    putJourney
 }

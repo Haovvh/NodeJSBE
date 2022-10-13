@@ -3,7 +3,7 @@ const MySql = require('../DB/MySql');
 
 
 
-const getProductsForHomeCarousel = async (req = request, res = response) => {
+const getStatusJourneyById = async (req = request, res = response) => {
 
     try {
 
@@ -28,7 +28,7 @@ const getProductsForHomeCarousel = async (req = request, res = response) => {
 
 }
 
-const getListProductsHome = async (req = request, res = response) => {
+const postJourney = async (req = request, res = response) => {
 
     try {
 
@@ -52,7 +52,7 @@ const getListProductsHome = async (req = request, res = response) => {
     }
 }
 
-const likeOrUnlikeProduct = async (req = request, res = response) => {
+const putJourney = async (req = request, res = response) => {
 
     try {
 
@@ -92,7 +92,7 @@ const likeOrUnlikeProduct = async (req = request, res = response) => {
 
 }
 
-const getAllListCategories = async (req = request, res = response) => {
+const getAllJourneybyId = async (req = request, res = response) => {
 
     try {
 
@@ -117,7 +117,7 @@ const getAllListCategories = async (req = request, res = response) => {
 
 }
 
-const productFavoriteForUser = async (req = request, res = response) => {
+const getAllJourneybyPhone = async (req = request, res = response) => {
 
     try {
 
@@ -141,142 +141,12 @@ const productFavoriteForUser = async (req = request, res = response) => {
     }
 }
 
-const getProductsForCategories = async (req = request, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const products = await conn.query(`CALL SP_LIST_PRODUCTS_FOR_CATEGORY(?,?);`, [req.params.idCategory, req.uidPerson]);
-
-        await conn.end();
-
-        res.json({
-            resp: true,
-            message: 'List Products',
-            listProducts: products[0][0]
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-
-}
-
-const saveOrderBuyProducts = async (req = request, res = response) => {
-
-    try {
-
-        const { receipt, amount, products } = req.body;
-
-        const conn = await MySql();
-
-        const db = await conn.query('INSERT INTO orderBuy (user_id, receipt, amount) VALUES (?,?,?)', [req.uidPerson, receipt, amount]);
-
-        products.forEach(e => {
-            conn.query('INSERT INTO orderDetails (orderBuy_id, product_id, quantity, price) VALUES (?,?,?,?)', [db[0].insertId, e.uidProduct, e.amount, e.price]);
-        });
-
-        // await conn.end();
-
-        return res.json({
-            resp: true,
-            message: 'Products save'
-        });
-
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-}
-
-const addNewProduct = async (req = request, res = response) => {
-
-    try {
-
-        const { name, description, stock, price, uidCategory } = req.body;
-
-        const conn = await MySql();
-
-        await conn.query('INSERT INTO Products (nameProduct, description, codeProduct, stock, price, picture, category_id) VALUE (?,?,?,?,?,?,?)',
-            [name, description, '000' + name, stock, price, req.file.filename, uidCategory]);
-
-        await conn.end();
-
-        return res.json({
-            resp: true,
-            message: 'Product Added'
-        })
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-}
-
-const getAllPurchasedProducts = async (req, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const orderbuy = await conn.query('SELECT * FROM orderBuy WHERE user_id = ?', [req.uidPerson]);
-
-        await conn.end();
-
-        res.json({
-            resp: true,
-            msg: 'Get Puchased Products',
-            orderBuy: orderbuy[0],
-        });
-
-    } catch (err) {
-
-    }
-
-}
-
-const getOrderDetailsProducts = async (req, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const orderDetails = await conn.query(`CALL SP_ORDER_DETAILS(?);`, [req.params.uidOrder]);
-
-        await conn.end();
-
-        res.json({
-            resp: true,
-            msg: 'Get Puchased Products',
-            orderDetails: orderDetails[0][0],
-        });
-
-    } catch (err) {
-
-    }
-
-}
-
 
 
 module.exports = {
-    getProductsForHomeCarousel,
-    getListProductsHome,
-    likeOrUnlikeProduct,
-    getAllListCategories,
-    productFavoriteForUser,
-    saveOrderBuyProducts,
-    getProductsForCategories,
-    addNewProduct,
-    getAllPurchasedProducts,
-    getOrderDetailsProducts
+    getStatusJourneyById,
+    postJourney,
+    putJourney,
+    getAllJourneybyId,
+    getAllJourneybyPhone
 }
