@@ -25,7 +25,7 @@ const addNewUser = async (req = request, res = response) => {
 
         return res.json({
             resp: true,
-            message: 'Usuario ' + username + ' fue creado con exito!'
+            message: 'User ' + username + 'is Success'
         });
 
     } else {
