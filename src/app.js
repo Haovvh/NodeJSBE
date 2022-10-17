@@ -16,7 +16,6 @@ app.use('/api', require("./Routes/auth.routes"));
 app.use('/api', require("./Routes/user.routes"));
 
 app.use('/api', require("./Routes/driver.routes"));
-app.use('/api', require("./Routes/customer.routes"));
 app.use('/api', require("./Routes/journey.routes"));
 
 // This folder will be Public
