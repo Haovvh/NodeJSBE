@@ -12,8 +12,9 @@ app.use(express.urlencoded({ extended: false }));
 
 
 // Routes
-app.use('/api', require("./Routes/user.routes"));
 app.use('/api', require("./Routes/auth.routes"));
+app.use('/api', require("./Routes/user.routes"));
+
 app.use('/api', require("./Routes/driver.routes"));
 app.use('/api', require("./Routes/customer.routes"));
 app.use('/api', require("./Routes/journey.routes"));

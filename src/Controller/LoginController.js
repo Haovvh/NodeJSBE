@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const { generarJsonWebToken } = require('../Helpers/JWToken');
 
 
-const LoginUsuario = async ( req = request, res = response ) => {
+const LoginUser = async ( req = request, res = response ) => {
 
     const { email, passwordd } = req.body;
 
@@ -13,7 +13,7 @@ const LoginUsuario = async ( req = request, res = response ) => {
 
         const conn = await MySql();
 
-        const existsEmail = await conn.query('SELECT id, email, passwordd FROM users WHERE email = ? LIMIT 1', [ email ]);
+        const existsEmail = await conn.query('SELECT id, email, passwordd FROM customer WHERE email = ? LIMIT 1', [ email ]);
 
 
         if( existsEmail[0].length === 0 ){
@@ -42,7 +42,7 @@ const LoginUsuario = async ( req = request, res = response ) => {
         conn.end();
         return res.json({
             resp: true,
-            message : 'Welcome to Frave Shop',
+            message : 'Welcome GoCar App',
             token: token
         });
 
@@ -56,20 +56,20 @@ const LoginUsuario = async ( req = request, res = response ) => {
    }
 }
 
-const RenweToken = async ( req = request , res = response ) => {
+const RenewToken = async ( req = request , res = response ) => {
 
 
     const token = await generarJsonWebToken( req.uidPerson );
    
     return res.json({
         resp: true,
-        message : 'Welcome to Frave Shop',
+        message : 'Welcome GoCar App',
         token: token
     });
 }
 
 
 module.exports = {
-    LoginUsuario,
-    RenweToken,
+    LoginUser,
+    RenewToken,
 };
