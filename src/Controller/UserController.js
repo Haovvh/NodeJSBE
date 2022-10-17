@@ -15,11 +15,11 @@ const addNewUser = async (req = request, res = response) => {
 
     const conn = await MySql();
 
-    const hasEmail = await conn.query('SELECT email FROM users WHERE email = ?', [email]);
+    const hasEmail = await conn.query('SELECT Passenger_Email FROM users WHERE email = ?', [email]);
 
     if (hasEmail[0].length == 0) {
 
-        await conn.query(`CALL SP_REGISTER_USER(?,?,?);`, [username, email, pass]);
+        await conn.query(`CALL SP_REGISTER_USER(?,?,?);`, [username, email, passwordd]);
 
         conn.end();
 

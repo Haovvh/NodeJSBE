@@ -13,7 +13,7 @@ const LoginUser = async ( req = request, res = response ) => {
 
         const conn = await MySql();
 
-        const existsEmail = await conn.query('SELECT id, email, passwordd FROM customer WHERE email = ? LIMIT 1', [ email ]);
+        const existsEmail = await conn.query('SELECT Passenger_ID, Passenger_Email, Passenger_Pass FROM Passengers WHERE email = ? LIMIT 1', [ email ]);
 
 
         if( existsEmail[0].length === 0 ){
@@ -25,7 +25,7 @@ const LoginUser = async ( req = request, res = response ) => {
         }
 
 
-        const validatedPassword = await bcrypt.compareSync( passwordd, existsEmail[0][0].passwordd );
+        const validatedPassword = await bcrypt.compareSync( passwordd, existsEmail[0][0].Passenger_Pass );
 
         if( !validatedPassword ){
 
@@ -37,7 +37,7 @@ const LoginUser = async ( req = request, res = response ) => {
             
         }
 
-        const token = await generarJsonWebToken( existsEmail[0][0].id );
+        const token = await generarJsonWebToken( existsEmail[0][0].Passenger_ID );
                 
         conn.end();
         return res.json({
