@@ -1,7 +1,7 @@
 const { response, request } = require('express');
 const MySql = require('../DB/MySql');
 
-
+//getJourneyById, postJourney, putJourney
 
 const getJourneyById = async (req = request, res = response) => {
 
@@ -92,54 +92,6 @@ const putJourney = async (req = request, res = response) => {
 
 }
 
-const getAllJourneybyId = async (req = request, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const category = await conn.query('SELECT * FROM Category');
-
-        await conn.end();
-
-        return res.json({
-            resp: true,
-            message: 'Get All List Categories',
-            categories: category[0]
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-
-}
-
-const getAllJourneybyPhone = async (req = request, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const listProducts = await conn.query(`CALL SP_LIST_FAVORITE_PRODUCTS(?);`, [req.uidPerson]);
-
-        await conn.end();
-
-        res.json({
-            resp: true,
-            message: 'List to products favorites',
-            listProducts: listProducts[0][0]
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-}
 
 
 

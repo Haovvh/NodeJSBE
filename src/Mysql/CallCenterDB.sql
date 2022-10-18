@@ -19,7 +19,7 @@ Use CallCenterDB;
 		,Passenger_Pass			VARCHAR(50)
 		,Passenger_Name			VARCHAR(128)
 		,Date_of_birth			DATE
-        ,Roles					VARCHAR(50)
+        ,Roles					VARCHAR(20)
 		,UNIQUE (Passenger_Phone)
         ,unique (Passenger_Email) 
         );

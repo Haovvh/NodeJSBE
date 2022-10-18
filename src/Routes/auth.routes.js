@@ -4,9 +4,7 @@ const { validateToken } = require('../Middlewares/ValidateToken');
 
 const router = Router();
 
-    router.post('/auth/login', LoginUser);
-    router.get('/auth/renew-login', validateToken ,RenewToken );
-    
-
+router.post('/auth/login', LoginUser);
+router.get('/auth/renew-login', validateToken, RenewToken);
 
 module.exports = router;

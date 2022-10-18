@@ -5,7 +5,7 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const MySql = require('../DB/MySql');
 
-//Router: add user, get user by id, put user
+//addNewUser, getUserById, changeFotoProfile, updateInformationUser
 const addNewUser = async (req = request, res = response) => {
 
     const { username, email, passwordd } = req.body;
@@ -37,7 +37,7 @@ const addNewUser = async (req = request, res = response) => {
 
 }
 
-const getUserByPhone = async (req = request, res = response) => {
+const getUserById = async (req = request, res = response) => {
 
     try {
 
@@ -61,20 +61,26 @@ const getUserByPhone = async (req = request, res = response) => {
     }
 
 }
-const updateUser = async (req = request, res = response) => {
+
+const changeFotoProfile = async (req = request, res = response) => {
 
     try {
 
         const conn = await MySql();
 
-        const userdb = await conn.query(`CALL SP_GET_USER_BY_ID(?);`, [req.uidPerson]);
+        const rows = await conn.query('SELECT image FROM person WHERE uid = ?', [req.uidPerson]);
 
-        conn.end();
+        if (rows[0][0].image != null) {
+            await fs.unlink(path.resolve('src/Uploads/Profile/' + rows[0][0].image));
+        }
+
+        await conn.query('UPDATE person SET image = ? WHERE uid = ?', [req.file.filename, req.uidPerson]);
+
+        await conn.end();
 
         return res.json({
             resp: true,
-            message: 'Get user by Id',
-            user: userdb[0][0][0]
+            message: 'Updated image'
         });
 
     } catch (err) {
@@ -83,12 +89,39 @@ const updateUser = async (req = request, res = response) => {
             message: err
         });
     }
-
 }
+
+const updateInformationUser = async (req = request, res = response) => {
+
+    try {
+
+        const { firstname, lastname, phone, address, reference } = req.body;
+
+        const conn = await MySql();
+
+        await conn.query(`CALL SP_UPDATE_INFORMATION(?,?,?,?,?,?);`, [req.uidPerson, firstname, lastname, phone, address, reference]);
+
+        await conn.end();
+
+        return res.json({
+            resp: true,
+            message: 'Infomation personal added'
+        });
+
+    } catch (err) {
+        return res.json({
+            resp: false,
+            message: err
+        });
+    }
+}
+
+
 
 
 module.exports = {
     addNewUser,
-    getUserByPhone,
-    updateUser
+    getUserById,
+    changeFotoProfile,
+    updateInformationUser
 }
