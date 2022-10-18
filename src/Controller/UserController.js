@@ -8,10 +8,10 @@ const MySql = require('../DB/MySql');
 
 const addNewUser = async (req = request, res = response) => {
 
-    const { username, email, passwordd } = req.body;
+    const { username, email, password } = req.body;
 
     const salt = bcrypt.genSaltSync();
-    const pass = bcrypt.hashSync( passwordd, salt );
+    const pass = bcrypt.hashSync( password, salt );
 
     const conn = await MySql();
 

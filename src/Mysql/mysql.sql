@@ -1,8 +1,10 @@
+drop database productshop
+
 CREATE DATABASE productshop;
 
 USE productshop;
 
-CREATE TABLE person
+CREATE TABLE productshop.person
 (
 	uid INT PRIMARY KEY AUTO_INCREMENT,
 	firstName VARCHAR(50) NULL,
@@ -11,14 +13,14 @@ CREATE TABLE person
 	address VARCHAR(90) NULL,
 	reference VARCHAR(90) NULL,
 	image VARCHAR(250) NULL
-)
+);
 
-CREATE TABLE users
+CREATE TABLE productshop.users
 (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	users VARCHAR(50) NOT NULL,
 	email VARCHAR(100) NOT NULL,
-	passwordd VARCHAR(100) NOT NULL,
+	password VARCHAR(100) NOT NULL,
 	token VARCHAR(256) NULL,
 	statuss BOOL NULL DEFAULT 1,
 	verified_email BOOL NULL,
@@ -26,23 +28,23 @@ CREATE TABLE users
 	created DATETIME DEFAULT NOW(),
 	UNIQUE KEY (email),
 	FOREIGN KEY (persona_id) REFERENCES person(uid)
-)
+);
 
 
-CREATE TABLE Home_carousel
+CREATE TABLE productshop.Home_carousel
 (
 	uidCarousel INT PRIMARY KEY AUTO_INCREMENT,
 	image VARCHAR(256) NULL,
 	category VARCHAR(100) NULL
-)
+);
 
-CREATE TABLE Category
+CREATE TABLE productshop.Category
 (
 	uidCategory INT PRIMARY KEY AUTO_INCREMENT,
 	category VARCHAR(80),
 	picture VARCHAR(100),
 	status BOOL DEFAULT 1
-)
+);
 
 CREATE TABLE Products
 (
@@ -56,18 +58,18 @@ CREATE TABLE Products
 	picture VARCHAR(256) NULL,
 	category_id INT,
 	FOREIGN KEY (category_id) REFERENCES Category(uidCategory)
-)
+);
 
-CREATE TABLE favorite
+CREATE TABLE productshop.favorite
 (
 	uidFavorite INT PRIMARY KEY AUTO_INCREMENT,
 	product_id INT,
 	user_id INT,
 	FOREIGN KEY(product_id) REFERENCES Products(uidProduct),
 	FOREIGN KEY(user_id) REFERENCES users(persona_id)
-)
+);
 
-CREATE TABLE orderBuy
+CREATE TABLE productshop.orderBuy
 (
 	uidOrderBuy INT PRIMARY KEY AUTO_INCREMENT,
 	user_id INT,
@@ -75,9 +77,9 @@ CREATE TABLE orderBuy
 	created_at DATETIME DEFAULT NOW(),
 	amount DOUBLE(11,2),
 	FOREIGN KEY(user_id) REFERENCES users(persona_id)
-)
+);
 
-CREATE TABLE orderDetails
+CREATE TABLE productshop.orderDetails
 (
 	uidOrderDetails INT PRIMARY KEY AUTO_INCREMENT,
 	orderBuy_id INT,
@@ -86,7 +88,7 @@ CREATE TABLE orderDetails
 	price DOUBLE(11,2),
 	FOREIGN KEY(orderBuy_id) REFERENCES orderBuy(uidOrderBuy),
 	FOREIGN KEY(product_id) REFERENCES Products(uidProduct)
-)
+);
 
 
 
@@ -96,6 +98,7 @@ CREATE TABLE orderDetails
 /*-----------------  Storage PROCEDURE  || FRAVE SHOP ----------------------*/
 /*-------------------------------------------------------------------------*/
 
+USE productshop;
 DELIMITER //
 CREATE PROCEDURE SP_GET_USER_BY_ID(IN UID INT )
 BEGIN
@@ -108,10 +111,10 @@ END//
 
 -- Add new users
 DELIMITER //
-CREATE PROCEDURE SP_REGISTER_USER (IN usu VARCHAR(50), IN email VARCHAR(100), IN passwordd VARCHAR(100) )
+CREATE PROCEDURE SP_REGISTER_USER (IN usu VARCHAR(50), IN email VARCHAR(100), IN password VARCHAR(100) )
 BEGIN
 	INSERT INTO person ( firstName ) VALUE ( usu );
-	INSERT INTO users ( users, email, passwordd , persona_id ) VALUE (usu, email, passwordd, LAST_INSERT_ID());
+	INSERT INTO users ( users, email, password , persona_id ) VALUE (usu, email, password, LAST_INSERT_ID());
 END//
 
 
