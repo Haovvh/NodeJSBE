@@ -5,8 +5,8 @@ const { validateToken } = require('../Middlewares/ValidateToken');
 
 const router = Router();
 
-router.post('/onlinedriver/post-online-driver', addOnlineDriver);
-router.get('/onlinedriver/get-driver', getOnlineDriver);
-router.put('/onlinedriver/put-driver', putOnlineDriver);
+router.post('/onlinedriver/post-online-driver', validateToken, addOnlineDriver);
+router.get('/onlinedriver/get-driver', validateToken, getOnlineDriver);
+router.put('/onlinedriver/put-driver', validateToken, putOnlineDriver);
 
 module.exports = router;
