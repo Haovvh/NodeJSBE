@@ -4,6 +4,13 @@ drop database callcenterdb;
 CREATE DATABASE CallCenterDB;
 
 Use CallCenterDB;
+	CREATE TABLE CallCenterDB.Users (
+		User_ID			INT PRIMARY KEY AUTO_INCREMENT
+		,User_Phone		VARCHAR(11)
+		,User_Name			VARCHAR(128)
+		,Date_of_birth			DATE
+		,UNIQUE (Passenger_Phone)
+        );
 
 	CREATE TABLE CallCenterDB.Passengers (
 		Passenger_ID			INT PRIMARY KEY AUTO_INCREMENT
@@ -14,7 +21,7 @@ Use CallCenterDB;
 		,Date_of_birth			DATE
         ,Roles					VARCHAR(50)
 		,UNIQUE (Passenger_Phone)
-        , unique (Passenger_Email) 
+        ,unique (Passenger_Email) 
         );
         
 	
@@ -61,6 +68,7 @@ Use CallCenterDB;
 		,SupportStaff_ID				INT
         , foreign key (Driver_ID) references Drivers(Driver_ID)
         , foreign key (Passenger_ID) references Passengers(Passenger_ID)
+		, foreign key (SupportStaff_ID) references Passengers(Passenger_ID)
 	);
 
 	CREATE TABLE CallCenterDB.Journey_status (

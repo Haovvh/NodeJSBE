@@ -3,7 +3,7 @@ const MySql = require('../DB/MySql');
 
 
 
-const getStatusJourneyById = async (req = request, res = response) => {
+const getJourneyById = async (req = request, res = response) => {
 
     try {
 
@@ -144,9 +144,8 @@ const getAllJourneybyPhone = async (req = request, res = response) => {
 
 
 module.exports = {
-    getStatusJourneyById,
+    getJourneyById,
     postJourney,
-    putJourney,
-    getAllJourneybyId,
-    getAllJourneybyPhone
+    putJourney
+
 }
