@@ -12,9 +12,9 @@ const LoginUsuario = async ( req = request, res = response ) => {
    try {
 
         const conn = await MySql();
-
-        const existsEmail = await conn.query('SELECT id, email, password FROM users WHERE email = ? LIMIT 1', [ email ]);
-
+        console.log("success")
+        const existsEmail = await conn.query('SELECT users.id, users.email, users.password, roles.name FROM users LEFT JOIN userrole ON (users.id = userrole.userId) LEFT JOIN roles on (roles.roleId = userrole.roleId) WHERE email = ? LIMIT 1', [ email ]);
+        //console.log(existsEmail);
 
         if( existsEmail[0].length === 0 ){
             conn.end();
@@ -43,7 +43,9 @@ const LoginUsuario = async ( req = request, res = response ) => {
         return res.json({
             resp: true,
             message : 'Welcome to Hao Shop',
-            token: token
+            accessToken: token,
+            id: existsEmail[0][0].id,
+            roles: existsEmail[0][0].name
         });
 
         
@@ -64,7 +66,7 @@ const RenweToken = async ( req = request , res = response ) => {
     return res.json({
         resp: true,
         message : 'Welcome to Frave Shop',
-        token: token
+        accessToken: token
     });
 }
 
