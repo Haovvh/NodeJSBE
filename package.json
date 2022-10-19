@@ -4,7 +4,7 @@
   "description": "Flutter - Nodejs - Mysql | E-Commers API",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/server.js"
+    "start": "nodemon src/app.js"
   },
   "author": "Frave Developer",
   "license": "ISC",
@@ -12,12 +12,19 @@
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "eiows": "^4.1.2",
     "express": "^4.17.1",
     "express-validator": "^6.10.1",
     "fs-extra": "^9.1.0",
+    "http": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.2",
     "mysql2": "^2.3.3",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "socket.io": "^4.5.3"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.7",
+    "utf-8-validate": "^5.0.10"
   }
 }

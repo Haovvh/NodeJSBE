@@ -29,6 +29,21 @@ CREATE TABLE productshop.users
 	UNIQUE KEY (email),
 	FOREIGN KEY (persona_id) REFERENCES person(uid)
 );
+CREATE TABLE productshop.roles
+(
+	roleId int PRIMARY KEY AUTO_INCREMENT,
+    name varchar(50)
+);
+create TABLE productshop.userrole
+(
+	userId INT unique,
+    roleId int ,
+    primary key(userId),
+    foreign key (userId) references users(id),
+    foreign key (roleId) references roles(roleId)
+);
+
+
 
 
 CREATE TABLE productshop.Home_carousel
