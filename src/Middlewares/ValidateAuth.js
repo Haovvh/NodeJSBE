@@ -1,7 +1,5 @@
 const { validationResult } = require("express-validator")
 
-
-
 const ValidatedAuth = (req, res, next) => {
 
     const errors = validationResult( req );
@@ -14,7 +12,6 @@ const ValidatedAuth = (req, res, next) => {
         });
     }
     next();
-
 }
 
 module.exports = {
