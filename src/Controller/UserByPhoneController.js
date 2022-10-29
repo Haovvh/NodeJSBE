@@ -4,10 +4,11 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const MySql = require('../DB/MySql');
 const jwt = require('jsonwebtoken');
-const {decodeToken} = require('../Middlewares/decodeToken')
+const {decodeToken} = require('../Middlewares/decodeToken');
+const { Console } = require('console');
 
 //getUserById, postUser, changeFotoProfile, putUser
-const postUser = async (req = request, res = response) => {
+const postUserbyPhone = async (req = request, res = response) => {
 
     try {
         const { password, username, email  } = req.body;    
@@ -45,7 +46,7 @@ const postUser = async (req = request, res = response) => {
     
 }
 
-const putUser = async (req = request, res = response) => {
+const putUserbyPhone = async (req = request, res = response) => {
 
     try {
         console.log("put User")
@@ -87,33 +88,61 @@ const putUser = async (req = request, res = response) => {
 }
 
 
-const getUser = async (req = request, res = response ) => {
+const getUserbyPhone = async (req = request, res = response ) => {
     
     try {
-        console.log(" get User ")
-        const Driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
+        console.log("get User by Phone")
+        const {Phone} = req.params;
         
-        const conn = await MySql();
-
-        const rows = await conn.query(`SELECT Fullname, Phone, Date_of_birth, role FROM Passengers        
-        WHERE Passenger_ID = ? `, [Driver_ID]);
-        console.log(rows[0][0])
-        await conn.end();
-        if(rows[0].length > 0) {
-            console.log("Có passenger");
-            return res.json({
-                resp: true,
-                message: 'Get Passengers',
-                data: rows[0][0]
-            });
-        }
-        else {
+        const role = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).role
+        if (!role.includes('ROLE_SUPPORTSTAFF')) {
+            console.log("Không có quyền Support Staff")
             return res.json( {
                 resp: false,
-                message: 'No Passenger',
+                message: 'No Support Staff',
             })
         }
-        
+        const conn = await MySql();
+        console.log(Phone)
+        const rows = await conn.query(`SELECT User_ID, Fullname, Date_of_birth FROM users WHERE Phone = ? `, [Phone]);
+        const address = await conn.query(`SELECT start_time, origin_Fulladdress, destination_Fulladdress 
+        FROM journeys WHERE User_ID = ? ORDER BY start_time DESC
+        `,[parseInt(rows[0][0].User_ID)])
+
+        const countPlace = await conn.query(`
+        SELECT origin_Fulladdress, COUNT(origin_Id) AS Count
+        FROM journeys 
+        WHERE User_ID = ? AND   Status = 'Success' 
+        GROUP BY origin_Id 
+        union
+        SELECT destination_Fulladdress, COUNT(destination_Id) AS Count
+        FROM journeys 
+        WHERE User_ID = ? AND   Status = 'Success' 
+        GROUP BY destination_Id
+        ORDER BY COUNT DESC
+        LIMIT 5
+        `,[parseInt(rows[0][0].User_ID), parseInt(rows[0][0].User_ID)])
+        await conn.end();
+        console.log(countPlace[0])
+        if(rows[0].length === 0) {
+            console.log("No user")
+            return res.json( {
+                resp: false,
+                message: 'No Users',
+            })            
+        }
+        else {
+            console.log("Có User");
+            
+            return res.json({
+                resp: true,
+                message: 'Get Users',
+                data: rows[0][0],
+                address: address[0],
+                count: countPlace[0]
+            });
+            
+        }        
         
     } catch (err) {
         console.log(err)
@@ -124,38 +153,10 @@ const getUser = async (req = request, res = response ) => {
     }
 }
 
-const changeFotoProfile = async ( req = request, res = response ) => {
 
-    try {
-
-        const conn = await MySql();
-
-        const rows = await conn.query('SELECT image FROM person WHERE uid = ?', [ req.uidPerson ]);
-
-        if( rows[0][0].image != null ){
-            await fs.unlink(path.resolve('src/Uploads/Profile/' + rows[0][0].image));
-        }
-
-        await conn.query('UPDATE person SET image = ? WHERE uid = ?', [ req.file.filename, req.uidPerson ]);
-
-        await conn.end();
-        
-        return res.json({
-            resp: true,
-            message: 'Updated image'
-        });
-        
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        }); 
-    }
-}
 
 module.exports = {
-    postUser,
-    getUser,
-    changeFotoProfile,
-    putUser,
+    postUserbyPhone,
+    getUserbyPhone,
+    putUserbyPhone,
 }

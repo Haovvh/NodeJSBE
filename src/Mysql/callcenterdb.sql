@@ -1,92 +1,67 @@
-select * from callcenterdb.cars;
 drop database callcenterdb;
 
 CREATE DATABASE CallCenterDB;
 
 Use CallCenterDB;
+	CREATE TABLE CallCenterDB.Users (
+		User_ID			INT PRIMARY KEY AUTO_INCREMENT
+		,Phone					VARCHAR(11)
+		,Fullname				VARCHAR(128)
+		,Date_of_birth			DATE
+		,UNIQUE (Phone)
+        );	
 
 	CREATE TABLE CallCenterDB.Passengers (
 		Passenger_ID			INT PRIMARY KEY AUTO_INCREMENT
-		,Passenger_Email		VARCHAR(128)
-		,Passenger_Phone		VARCHAR(11)
-		,Passenger_Pass			VARCHAR(100)
-		,Passenger_Name			VARCHAR(128)
-		,Date_of_birth			DATE
-		,UNIQUE (Passenger_Phone)
-        , unique (Passenger_Email) 
-        );
-	
-    CREATE TABLE CallCenterDB.roles
-(
-	roleId int PRIMARY KEY AUTO_INCREMENT,
-    name varchar(50)
-);
-
-create TABLE CallCenterDB.userrole
-(
-	Passenger_ID INT unique,
-    roleId int ,
-    primary key(Passenger_ID, roleId),
-    foreign key (Passenger_ID) references Passengers(Passenger_ID),
-    foreign key (roleId) references roles(roleId)
-);
+		,Email					VARCHAR(128)
+		,Phone					VARCHAR(11)
+		,Password				VARCHAR(100)
+		,Fullname				VARCHAR(128)
+		,Date_of_birth			VARCHAR(11)
+		,role					VARCHAR(100) DEFAULT 'ROLE_PASSENGER'
+		,UNIQUE (Phone)
+        ,unique (Email) 
+        );	    
         
-	
-	CREATE TABLE CallCenterDB.Cars (
-		Cars_ID						INT PRIMARY KEY AUTO_INCREMENT
+		CREATE TABLE CallCenterDB.Drivers (    
+		Driver_ID					INT 
 		,Car_owner					VARCHAR(128)
 		,Car_type					VARCHAR(128)
 		,Car_code					VARCHAR(128)
 		,Car_seat					INT
-		,Car_color					VARCHAR(128)        
-	);
-
-	CREATE TABLE CallCenterDB.Drivers (    
-		Driver_ID					INT 
-		,Car_ID						INT
-        , primary key (Driver_ID, Car_ID)
+		,Car_color					VARCHAR(128)
+        , primary key (Driver_ID)
         ,FOREIGN KEY (Driver_ID) REFERENCES Passengers(Passenger_ID)
-        ,FOREIGN KEY (Car_ID) REFERENCES Cars(Cars_ID)
 	);
-    
-
-	CREATE TABLE CallCenterDB.Locations (
-		Location_ID					INT PRIMARY KEY AUTO_INCREMENT
-		,Location_FullName			VARCHAR(256)
-		,Place_id 					VARCHAR(128)
-		,LNG						FLOAT
-		,LAT						FLOAT
-        ,unique (Place_id)
-	);
+    	
 
 	CREATE TABLE CallCenterDB.Journeys (
 		Journeys_ID					INT PRIMARY KEY AUTO_INCREMENT
 		,Passenger_ID					INT
 		,Driver_ID 						INT
+		,User_ID						INT
 		,start_time 					DATETIME DEFAULT NOW()
 		,finish_time 					DATETIME
 		,Price							BIGINT
-		,LocationID_FROM				INT
-		,LocationID_TO					INT
-		,Journey_statusId 				VARCHAR(128)
-		,Journey_pointCode				VARCHAR(256)
+		,origin_Id						VARCHAR(2048)
+		,origin_Fulladdress				VARCHAR(256)
+		,destination_Id					VARCHAR(2048)
+		,destination_Fulladdress		VARCHAR(256)
+		,Status 						VARCHAR(128) default 'Create'
+		,pointCode						VARCHAR(2048)
 		,distance_km					double
 		,SupportStaff_ID				INT
         , foreign key (Driver_ID) references Drivers(Driver_ID)
         , foreign key (Passenger_ID) references Passengers(Passenger_ID)
+		, foreign key (User_ID) references Users(User_ID)
 	);
 
-	CREATE TABLE CallCenterDB.Journey_status (
-		status_ID					INT PRIMARY KEY AUTO_INCREMENT
-		,Status_Description	 			VARCHAR(256)
-	);
+	
     CREATE TABLE CallCenterDB.Online_Driver (
-    Driver_ID		INT PRIMARY KEY
+	Online_Driver_ID					INT PRIMARY KEY AUTO_INCREMENT,
+    Driver_ID		INT
     ,LNG			DOUBLE
     ,LAT			DOUBLE
-    ,Status_ID		INT
-    ,foreign key (Driver_ID) references Drivers(Driver_ID)
-    
+    ,Status		VARCHAR(100) default 'OffLine'
+    ,foreign key (Driver_ID) references Drivers(Driver_ID)    
     )
-
-

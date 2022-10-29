@@ -1,22 +1,25 @@
 const { response, request } = require('express');
 const MySql = require('../DB/MySql');
-
-//getDriver
-
-const getDriver = async (req = request, res = response) => {
-
+const {decodeToken} = require('../Middlewares/decodeToken')
+//getDriver, postDriver, putDriver
+const roles = ['ROLE_PASSENGER','ROLE_DRIVER','ROLE_SUPPORTSTAFF'];
+const getDriver = async (req = request, res = response) => { 
+   
     try {
+        const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
 
         const conn = await MySql();
 
-        const rows = await conn.query('SELECT * FROM Home_carousel');
-
+        const rows = await conn.query(`SELECT * FROM Drivers 
+        LEFT JOIN Passengers on (Passengers.Passenger_ID = Drivers.Driver_ID)
+        WHERE Driver_ID = ?`, [_id]);
+        console.log(rows[0][0])
         await conn.end();
 
         return res.json({
             resp: true,
-            message: 'Get List products home',
-            slideProducts: rows[0]
+            message: 'Get Drivers',
+            data: rows[0][0]
         });
 
     } catch (err) {
@@ -29,99 +32,59 @@ const getDriver = async (req = request, res = response) => {
 }
 
 const postDriver = async (req = request, res = response) => {
-
+    
     try {
-
+        console.log("Vao post Driver")
+        const Driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
+        const { Car_code, Car_color, Car_owner, Car_seat, Car_type } = req.body;        
+        console.log(req.body)
         const conn = await MySql();
+        await conn.query(`INSERT INTO Drivers ( Driver_ID, Car_code, Car_color, Car_owner, Car_seat, Car_type ) 
+        VALUES (? , ? , ? , ? , ? , ? ) `, 
+        [ Driver_ID, Car_code, Car_color, Car_owner,Number(Car_seat) , Car_type ]);
+        await conn.query(`UPDATE Passengers SET role = ? WHERE Passenger_ID = ? `, [ roles[1], Driver_ID ])
 
-        const products = await conn.query(`CALL SP_LIST_PRODUCTS_HOME(?);`, [req.uidPerson]);
-
-        await conn.end();
+        conn.end();
 
         return res.json({
             resp: true,
-            message: 'Get List Products for Home',
-            listProducts: products[0][0]
+            message : 'Create Driver success!'
         });
-
     } catch (err) {
+        console.log(err)
         return res.status(500).json({
             resp: false,
             message: err
         });
-    }
+    } 
 }
 
 const putDriver = async (req = request, res = response) => {
 
+    
     try {
-
-        const { uidProduct } = req.body;
+        const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
+        const {carOwner, carCode, carType, carSeat, carColor } = req.body;        
 
         const conn = await MySql();
-
-        const isLike = await conn.query('SELECT COUNT(uidFavorite) isfavorite FROM favorite WHERE user_id = ? AND product_id = ?', [req.uidPerson, uidProduct]);
-
-        if (isLike[0][0].isfavorite > 0) {
-
-            await conn.query('DELETE FROM favorite WHERE user_id = ? AND product_id = ?', [req.uidPerson, uidProduct]);
-
-            await conn.end();
-
-            return res.json({
-                resp: true,
-                message: 'Unlike'
-            });
-        }
-
-        await conn.query('INSERT INTO favorite (user_id, product_id) VALUE (?,?)', [req.uidPerson, uidProduct]);
-
-        await conn.end();
-
+        await conn.query(`UPDATE Drivers SET car_owner = ? , car_type = ?, car_code = ? , car_seat = ? , car_color = ?
+        WHERE (Driver_ID = ?)`, [carOwner, carType, carCode, carSeat, carColor, _id ]);
+        
+        conn.end();
         return res.json({
             resp: true,
-            message: 'Like'
+            message : 'Update Driver success!'
         });
-
-    } catch (err) {
+        
+    } catch (error) {
         return res.status(500).json({
             resp: false,
             message: err
         });
-    }
+    } 
 
 }
-
-const getAllJourney = async (req = request, res = response) => {
-
-    try {
-
-        const conn = await MySql();
-
-        const category = await conn.query('SELECT * FROM Category');
-
-        await conn.end();
-
-        return res.json({
-            resp: true,
-            message: 'Get All List Categories',
-            categories: category[0]
-        });
-
-    } catch (err) {
-        return res.status(500).json({
-            resp: false,
-            message: err
-        });
-    }
-
-}
-
-
 
 module.exports = {
-    getDriver,
-    postDriver,
-    putDriver,
-    getAllJourney
+    getDriver, postDriver, putDriver
 }

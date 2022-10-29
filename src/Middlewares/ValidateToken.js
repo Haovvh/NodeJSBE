@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
 
-const validateToken = ( req, res, next ) => {
-
+const validateToken = ( req, res, next ) => {    
     let token = req.header('x-access-token');
     if( !token ){
+        console.log("No Token")
         return res.status(401).json({
             resp: false,
             message : "There is not Token in the request"
@@ -12,11 +12,16 @@ const validateToken = ( req, res, next ) => {
     try {
         // -----------------------------------Add key Jwt TOKEN
         const verified  = jwt.verify( token, process.env.KEY_JWTOKEN );
+        
         if(verified) {
+            console.log("next")
             next()            
         }else{
             // Access Denied
-            return res.status(401).send(error);
+            return res.status(401).json({
+                resp: false,
+                message : 'Wrong Token',
+            })
         }        
         
     } catch (e) {
