@@ -13,31 +13,41 @@ const postJourney = async (req = request, res = response) => {
     try {
         console.log("vao postjourney")
         const {Passenger_ID, 
+            User_ID, 
+            SupportStaff_ID,
             driver_ID, 
-            User_ID,
             Price, 
             origin_Id, 
             origin_Fulladdress, 
             destination_Id, 
             destination_Fulladdress, 
             distance_km, 
-            pointCode} = req.body;    
-        const token = req.header('x-access-token');
+            pointCode} = req.body;
         console.log(req.body)
-        
-        
         const conn = await MySql();
+        let row;
+        if(User_ID) {
+            console.log("User_ID")
+            row = await conn.query(`SELECT * FROM journeys WHERE User_ID = ? AND Status = ? `, [ User_ID, 'Create']);
+        }
+        else {
+            console.log("Passenger_ID")
+            row = await conn.query(`SELECT * FROM journeys WHERE Passenger_ID = ? AND Status = ? `, [ Passenger_ID, 'Create']);
+        }
+        
+        
+        
         //check xem tài xế đã nhận chuyến đi chưa?
-        const isOnlineDriver = await conn.query(`SELECT * FROM journeys WHERE Passenger_ID = ? AND Status = ? `, [ Passenger_ID, 'Create']);
-        console.log(isOnlineDriver[0])
+        
+        console.log(row[0])
         console.log("driver")
         
-        if( isOnlineDriver[0].length === 0 ){
+        if( row[0].length === 0 ){
             console.log("khoi tao journey")
             await conn.query(`INSERT INTO journeys 
-            ( Passenger_ID, Driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode) 
-            VALUE (?,?,?,?,?,?,?,?,?);`, 
-            [Passenger_ID, driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode]);
+            ( Passenger_ID, User_ID, SupportStaff_ID, Driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode) 
+            VALUE (?,?,?,?,?,?,?,?,?,?,?);`, 
+            [Passenger_ID, User_ID, SupportStaff_ID, driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode]);
             console.log("Tao thanh cong journey")
             conn.end();
 
@@ -60,8 +70,7 @@ const postJourney = async (req = request, res = response) => {
             resp: false,
             message: error
         }); 
-    }
-    
+    }  
 
 }
 
@@ -71,6 +80,7 @@ const postJourneybyuser = async (req = request, res = response) => {
         console.log("vao postjourney")
         const {driver_ID, 
             User_ID,
+            SupportStaff_ID,
             Price, 
             origin_Id, 
             origin_Fulladdress, 
@@ -84,9 +94,9 @@ const postJourneybyuser = async (req = request, res = response) => {
         const conn = await MySql();
         //check xem tài xế đã nhận chuyến đi chưa?
         await conn.query(`INSERT INTO journeys 
-            ( User_ID, Driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode) 
+            ( User_ID, SupportStaff_ID, Driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode) 
             VALUE (?,?,?,?,?,?,?,?,?);`, 
-            [User_ID, driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode]);
+            [User_ID,SupportStaff_ID, driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode]);
             console.log("Tao thanh cong journey")
             conn.end();
 
@@ -108,22 +118,31 @@ const postJourneybyuser = async (req = request, res = response) => {
 const getJourneyByDriver = async (req = request, res = response) => {    
     
     try {   
-        console.log("get journey success")
+        console.log("get Journey By Driver")
         const driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         //const driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
         const conn = await MySql();
-        
+        console.log("Check ")
         const getalljourney = await conn.query(`SELECT journeys.pointCode, journeys.Price, 
         journeys.origin_Fulladdress , journeys.destination_Fulladdress,
-        Passengers.Passenger_ID, Passengers.FullName, Passengers.Phone FROM journeys 
+        Passengers.Passenger_ID, Passengers.Fullname , Passengers.Phone ,
+        Users.Fullname as FullnameUser, Users.Phone as PhoneUser
+        FROM journeys 
         LEFT JOIN Passengers on (journeys.Passenger_ID = Passengers.Passenger_ID)
+        LEFT JOIN Users on (journeys.User_ID = Users.User_ID)
         WHERE Driver_ID = ? AND Status = 'Create' `, [driver_ID]);        
         conn.end();
-
+        console.log(getalljourney[0])
         if( getalljourney[0].length !== 0 ){        
             console.log("True")
+            if(!getalljourney[0][0].Passenger_ID) {
+                console.log("Passenger ID")
+                getalljourney[0][0].Fullname = getalljourney[0][0].FullnameUser;
+                getalljourney[0][0].Phone = getalljourney[0][0].PhoneUser
 
+            } 
+            console.log(getalljourney[0][0])
             return res.json({
                 resp: true,
                 message : 'Get journey is success!',
@@ -245,11 +264,13 @@ const putJourney = async (req = request, res = response ) => {
 
     try {
         console.log("put journey")
-        const {driver_ID, Passenger_ID, Status} = req.body;
+        const {driver_ID, SupportStaff_ID} = req.body;
         console.log(req.body);
         const conn = await MySql();
 
-        await conn.query(`UPDATE journeys SET Status = ? , finish_time = ? WHERE driver_ID = ? AND Passenger_ID = ? AND Status = ?`, ['Success', new Date(), driver_ID, Passenger_ID, Status]);
+        await conn.query(`UPDATE journeys SET Status = ? , finish_time = ?, 
+        SupportStaff_ID = ? WHERE driver_ID = ? AND Status = ?`, 
+        ['Success', new Date(),SupportStaff_ID, driver_ID,  'Create']);
 
         conn.end();
 

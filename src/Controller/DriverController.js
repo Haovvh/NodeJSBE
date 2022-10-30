@@ -3,6 +3,7 @@ const MySql = require('../DB/MySql');
 const {decodeToken} = require('../Middlewares/decodeToken')
 //getDriver, postDriver, putDriver
 const roles = ['ROLE_PASSENGER','ROLE_DRIVER','ROLE_SUPPORTSTAFF'];
+
 const getDriver = async (req = request, res = response) => { 
    
     try {
@@ -10,7 +11,7 @@ const getDriver = async (req = request, res = response) => {
 
         const conn = await MySql();
 
-        const rows = await conn.query(`SELECT * FROM Drivers 
+        const rows = await conn.query(`SELECT Passengers.Fullname, Passengers.Phone, Drivers.* FROM Drivers 
         LEFT JOIN Passengers on (Passengers.Passenger_ID = Drivers.Driver_ID)
         WHERE Driver_ID = ?`, [_id]);
         console.log(rows[0][0])

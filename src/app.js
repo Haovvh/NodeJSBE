@@ -23,6 +23,7 @@ const io = require("socket.io")(httpServer, {
     socket.on("calldriver", async (data) => {
       console.log("vao socket")
       console.log(socket.id)
+      console.log(data)
       
       const conn = await MySql();
       //query 5 tài xế gần nhất
@@ -38,10 +39,26 @@ const io = require("socket.io")(httpServer, {
         //2h3X8Qv6x4jJhSJTAAKv
       });
     });
-    socket.on("driveracceptjourney", async (data) => {
+    //successjourney
+    socket.on("successjourney", async (data) => {
+      console.log("driver accept journey")
       console.log(data);
-      io.to(data.socket_ID).emit("passenger", {
-        driver_ID: data.driver_ID
+      io.to(data.socket_ID).emit("successpassenger", {
+            Status: data.Status
+      })
+    })
+
+
+    socket.on("driveracceptjourney", async (data) => {
+      console.log("driver accept journey")
+      console.log(data);
+      io.to(data.socket_ID).emit("driverinfo", {
+            Fullname: data.Fullname,
+            Driver_ID: data.Driver_ID,
+            Car_type: data.Car_type,
+            Car_code: data.Car_code,
+            Car_seat: data.Car_seat,
+            Car_color: data.Car_color
       })
         //const conn = await MySql();
         //update

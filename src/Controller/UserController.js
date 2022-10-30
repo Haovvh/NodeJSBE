@@ -44,6 +44,40 @@ const postUser = async (req = request, res = response) => {
     }
     
 }
+const putUserToSupportStaff = async (req = request, res = response) => {
+
+    try {
+        console.log("putUserToSupportStaff")
+        const Passenger_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
+        const { SupportStaffCode } = req.body;
+        console.log(req.body)
+        const conn = await MySql();
+        if(SupportStaffCode === '20880254'){
+            await conn.query(`UPDATE Passengers SET role = 'ROLE_SUPPORTSTAFF' WHERE Passenger_ID = ?`, [ Passenger_ID ]);
+            conn.end();
+            console.log("True")
+            return res.json({
+                
+                resp: true,
+                message : 'Role  success!'
+            });
+        } else {
+            console.log("False")
+            return res.json({
+                resp: false,
+                message : 'SupportStaff Code Wrong'
+            }); 
+        }
+        
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            resp: false,
+            message: err
+        }); 
+    }
+    
+}
 
 const putUser = async (req = request, res = response) => {
 
@@ -91,12 +125,12 @@ const getUser = async (req = request, res = response ) => {
     
     try {
         console.log(" get User ")
-        const Driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
+        const user_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
         const conn = await MySql();
 
-        const rows = await conn.query(`SELECT Fullname, Phone, Date_of_birth, role FROM Passengers        
-        WHERE Passenger_ID = ? `, [Driver_ID]);
+        const rows = await conn.query(`SELECT Passenger_ID, Fullname, Phone, Date_of_birth, role FROM Passengers        
+        WHERE Passenger_ID = ? `, [user_ID]);
         console.log(rows[0][0])
         await conn.end();
         if(rows[0].length > 0) {
@@ -158,4 +192,5 @@ module.exports = {
     getUser,
     changeFotoProfile,
     putUser,
+    putUserToSupportStaff
 }

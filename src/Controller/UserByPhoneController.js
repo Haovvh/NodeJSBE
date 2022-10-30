@@ -11,33 +11,37 @@ const { Console } = require('console');
 const postUserbyPhone = async (req = request, res = response) => {
 
     try {
-        const { password, username, email  } = req.body;    
-        const salt = bcrypt.genSaltSync();
-        const pass = bcrypt.hashSync( password, salt );
-
+        console.log("put User")
+        const { Fullname, Phone, Date_of_birth } = req.body;
+        console.log(req.body)
         const conn = await MySql();
 
-        const hasEmail = await conn.query('SELECT Email FROM Passengers WHERE Email = ?', [email]);
+        const hasPhone = await conn.query(`SELECT Phone FROM Users WHERE Phone = ? `, [Phone]);
 
-        if( hasEmail[0].length == 0 ){
-            await conn.query(`INSERT INTO Passengers ( Fullname, 
-                Email, Password ) VALUE (?,?,?);`, [ username, email, pass ]);
-
+        console.log(hasPhone[0])
+        if( hasPhone[0].length == 0 ){
+            
+            await conn.query(`INSERT INTO Users (Phone, Fullname, Date_of_birth)
+            VALUES (?, ? ,?)
+            `, [ Phone,  Fullname, Date_of_birth ]);
             conn.end();
-
+            console.log("True")
             return res.json({
+                
                 resp: true,
-                message : 'Email ' + email +' success!'
+                message : 'Phone  success!'
             });
         
         } else {
+            console.log("False")
             return res.json({
                 resp: false,
-                message : 'Email already exists'
+                message : 'Phone already exists'
             }); 
         }
         
-    } catch (error) {
+    } catch (err) {
+        console.log(err)
         return res.status(500).json({
             resp: false,
             message: err
@@ -45,6 +49,7 @@ const postUserbyPhone = async (req = request, res = response) => {
     }
     
 }
+
 
 const putUserbyPhone = async (req = request, res = response) => {
 
@@ -105,10 +110,19 @@ const getUserbyPhone = async (req = request, res = response ) => {
         const conn = await MySql();
         console.log(Phone)
         const rows = await conn.query(`SELECT User_ID, Fullname, Date_of_birth FROM users WHERE Phone = ? `, [Phone]);
+        console.log(rows[0])
+        if(rows[0].length === 0) {
+            console.log("No user")
+            await conn.end()
+            return res.json( {
+                resp: false,
+                message: 'No Users'
+            })            
+        }
         const address = await conn.query(`SELECT start_time, origin_Fulladdress, destination_Fulladdress 
         FROM journeys WHERE User_ID = ? ORDER BY start_time DESC
         `,[parseInt(rows[0][0].User_ID)])
-
+        console.log(address[0])
         const countPlace = await conn.query(`
         SELECT origin_Fulladdress, COUNT(origin_Id) AS Count
         FROM journeys 
@@ -124,25 +138,15 @@ const getUserbyPhone = async (req = request, res = response ) => {
         `,[parseInt(rows[0][0].User_ID), parseInt(rows[0][0].User_ID)])
         await conn.end();
         console.log(countPlace[0])
-        if(rows[0].length === 0) {
-            console.log("No user")
-            return res.json( {
-                resp: false,
-                message: 'No Users',
-            })            
-        }
-        else {
-            console.log("Có User");
-            
-            return res.json({
-                resp: true,
-                message: 'Get Users',
-                data: rows[0][0],
-                address: address[0],
-                count: countPlace[0]
-            });
-            
-        }        
+        
+        console.log("Có User");
+        return res.json({
+            resp: true,
+            message: 'Get Users',
+            data: rows[0][0],
+            address: address[0],
+            count: countPlace[0]
+        });      
         
     } catch (err) {
         console.log(err)
