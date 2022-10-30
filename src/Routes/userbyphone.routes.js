@@ -10,6 +10,8 @@ const router = Router();
     router.post('/user-by-phone/post-user-by-phone', postUserbyPhone);
     
     router.put('/user-by-phone/put-user-by-phone', validateToken, putUserbyPhone);
+
+    
     
 
 module.exports = router;
