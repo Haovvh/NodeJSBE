@@ -9,7 +9,7 @@ const generarJsonWebToken = ( id, password,Fullname, Email , role ) => {
         const payload = { id, password, Fullname, Email, role };
 
         jwt.sign( payload, process.env.KEY_JWTOKEN, { 
-            expiresIn: '24h'
+            expiresIn: '1h'
         }, ( err, token ) => {
 
             if( !err ){ 

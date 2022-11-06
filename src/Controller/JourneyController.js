@@ -23,7 +23,6 @@ const postJourney = async (req = request, res = response) => {
             destination_Fulladdress, 
             distance_km, 
             pointCode} = req.body;
-        console.log(req.body)
         const conn = await MySql();
         let row;
         if(User_ID) {
@@ -33,21 +32,16 @@ const postJourney = async (req = request, res = response) => {
         else {
             console.log("Passenger_ID")
             row = await conn.query(`SELECT * FROM journeys WHERE Passenger_ID = ? AND Status = ? `, [ Passenger_ID, 'Create']);
-        }
-        
-        
-        
+        } 
         //check xem tài xế đã nhận chuyến đi chưa?
         
-        console.log(row[0])
-        console.log("driver")
         
         if( row[0].length === 0 ){
             console.log("khoi tao journey")
             await conn.query(`INSERT INTO journeys 
             ( Passenger_ID, User_ID, SupportStaff_ID, Driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode) 
             VALUE (?,?,?,?,?,?,?,?,?,?,?);`, 
-            [Passenger_ID, User_ID, SupportStaff_ID, driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode]);
+            [Passenger_ID, User_ID, (SupportStaff_ID), parseInt(driver_ID), Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode]);
             console.log("Tao thanh cong journey")
             conn.end();
 
@@ -61,7 +55,7 @@ const postJourney = async (req = request, res = response) => {
             console.log("else post journey")
             return res.json({
                 resp: false,
-                message : 'No connect driver'
+                message : 'Tài xế khác đã nhận chuyến. Nhận chuyến thật bại.'
             }); 
         }
     } catch (error) {
@@ -71,7 +65,6 @@ const postJourney = async (req = request, res = response) => {
             message: error
         }); 
     }  
-
 }
 
 const postJourneybyuser = async (req = request, res = response) => {
@@ -123,7 +116,6 @@ const getJourneyByDriver = async (req = request, res = response) => {
         //const driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
         const conn = await MySql();
-        console.log("Check ")
         const getalljourney = await conn.query(`SELECT journeys.pointCode, journeys.Price, 
         journeys.origin_Fulladdress , journeys.destination_Fulladdress,
         Passengers.Passenger_ID, Passengers.Fullname , Passengers.Phone ,
@@ -133,7 +125,6 @@ const getJourneyByDriver = async (req = request, res = response) => {
         LEFT JOIN Users on (journeys.User_ID = Users.User_ID)
         WHERE Driver_ID = ? AND Status = 'Create' `, [driver_ID]);        
         conn.end();
-        console.log(getalljourney[0])
         if( getalljourney[0].length !== 0 ){        
             console.log("True")
             if(!getalljourney[0][0].Passenger_ID) {
@@ -185,7 +176,6 @@ const getJourneyByPassenger = async (req = request, res = response) => {
         LEFT JOIN Passengers on (Passengers.Passenger_ID = drivers.Driver_ID)
         WHERE journeys.Passenger_ID = ? AND   Status = 'Create' `, [Passenger_ID]);        
         conn.end();
-        console.log(getalljourney[0])
 
         if( getalljourney[0].length !== 0 ){        
             console.log("True")
@@ -217,7 +207,6 @@ const getAllJourneyByPassenger = async (req = request, res = response) => {
     try {   
         console.log("get All journey by passenger success")
         const Passenger_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
-        //const driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
         const conn = await MySql();
         
@@ -233,7 +222,6 @@ const getAllJourneyByPassenger = async (req = request, res = response) => {
         GROUP BY destination_Id
         `, [Passenger_ID, Passenger_ID]);        
         conn.end();
-        console.log(getalljourney[0])
 
         if( getalljourney[0].length !== 0 ){        
             console.log("True")

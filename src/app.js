@@ -22,8 +22,8 @@ const io = require("socket.io")(httpServer, {
     
     socket.on("calldriver", async (data) => {
       console.log("vao socket")
+      console.log(data.socket_ID)
       console.log(socket.id)
-      console.log(data)
       
       const conn = await MySql();
       //query 5 tài xế gần nhất
@@ -54,6 +54,7 @@ const io = require("socket.io")(httpServer, {
       console.log(data);
       io.to(data.socket_ID).emit("driverinfo", {
             Fullname: data.Fullname,
+            Phone: data.Phone,
             Driver_ID: data.Driver_ID,
             Car_type: data.Car_type,
             Car_code: data.Car_code,
@@ -73,10 +74,10 @@ const io = require("socket.io")(httpServer, {
       console.log(data);
         const conn = await MySql();
         //update
-        //await conn.query(`UPDATE online_driver SET LNG = ? , LAT = ? WHERE Driver_ID = ? `, [ data.LNG, data.LAT ,data.id ])
+        await conn.query(`UPDATE online_driver SET LNG = ? , LAT = ?, Status = 'Online' WHERE Driver_ID = ? `, [ data.LNG, data.LAT ,data.id ])
         // delete and insert
-        await conn.query(`DELETE FROM online_driver WHERE Driver_ID = ? `,[parseInt(data.id)]);
-        await conn.query(`INSERT INTO online_driver (Driver_ID, LNG, LAT) Values ( ? , ? , ? ) `, [parseInt(data.id), parseFloat(data.LNG), parseFloat(data.LAT)]);
+        //await conn.query(`DELETE FROM online_driver WHERE Driver_ID = ? `,[parseInt(data.id)]);
+        //await conn.query(`INSERT INTO online_driver (Driver_ID, LNG, LAT) Values ( ? , ? , ? ) `, [parseInt(data.id), parseFloat(data.LNG), parseFloat(data.LAT)]);
     })
     
   });

@@ -11,7 +11,7 @@ const { Console } = require('console');
 const postUserbyPhone = async (req = request, res = response) => {
 
     try {
-        console.log("put User")
+        console.log("post User")
         const { Fullname, Phone, Date_of_birth } = req.body;
         console.log(req.body)
         const conn = await MySql();
@@ -26,10 +26,9 @@ const postUserbyPhone = async (req = request, res = response) => {
             `, [ Phone,  Fullname, Date_of_birth ]);
             conn.end();
             console.log("True")
-            return res.json({
-                
+            return res.json({                
                 resp: true,
-                message : 'Phone  success!'
+                message : 'Add User success!'
             });
         
         } else {

@@ -11,10 +11,9 @@ const getDriver = async (req = request, res = response) => {
 
         const conn = await MySql();
 
-        const rows = await conn.query(`SELECT Passengers.Fullname, Passengers.Phone, Drivers.* FROM Drivers 
+        const rows = await conn.query(`SELECT Passengers.Fullname, Passengers.Date_of_birth, Passengers.Phone, Drivers.* FROM Drivers 
         LEFT JOIN Passengers on (Passengers.Passenger_ID = Drivers.Driver_ID)
-        WHERE Driver_ID = ?`, [_id]);
-        console.log(rows[0][0])
+        WHERE Driver_ID = ? `, [_id]);
         await conn.end();
 
         return res.json({
@@ -29,7 +28,6 @@ const getDriver = async (req = request, res = response) => {
             message: err
         });
     }
-
 }
 
 const postDriver = async (req = request, res = response) => {
@@ -43,6 +41,7 @@ const postDriver = async (req = request, res = response) => {
         await conn.query(`INSERT INTO Drivers ( Driver_ID, Car_code, Car_color, Car_owner, Car_seat, Car_type ) 
         VALUES (? , ? , ? , ? , ? , ? ) `, 
         [ Driver_ID, Car_code, Car_color, Car_owner,Number(Car_seat) , Car_type ]);
+        await conn.query(`INSERT INTO online_driver (Driver_ID, LNG, LAT) Values ( ? , ? , ? ) `, [Driver_ID, 0, 0]);
         await conn.query(`UPDATE Passengers SET role = ? WHERE Passenger_ID = ? `, [ roles[1], Driver_ID ])
 
         conn.end();
@@ -65,11 +64,11 @@ const putDriver = async (req = request, res = response) => {
     
     try {
         const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
-        const {carOwner, carCode, carType, carSeat, carColor } = req.body;        
+        const {Phone,Fullname, Date_of_birth, Car_owner,Car_type,Car_code,Car_color} = req.body;        
 
         const conn = await MySql();
-        await conn.query(`UPDATE Drivers SET car_owner = ? , car_type = ?, car_code = ? , car_seat = ? , car_color = ?
-        WHERE (Driver_ID = ?)`, [carOwner, carType, carCode, carSeat, carColor, _id ]);
+        await conn.query(`UPDATE Drivers SET  Car_owner = ?, Car_type = ?,Car_code = ?,Car_color = ? 
+        WHERE (Driver_ID = ?)`, [Car_owner, Car_type, Car_code, Car_color, _id ]);
         
         conn.end();
         return res.json({

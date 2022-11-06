@@ -5,9 +5,9 @@ CREATE DATABASE CallCenterDB;
 Use CallCenterDB;
 	CREATE TABLE CallCenterDB.Users (
 		User_ID			INT PRIMARY KEY AUTO_INCREMENT
-		,Phone					VARCHAR(11)
-		,Fullname				VARCHAR(128)
-		,Date_of_birth			DATE
+		,Phone					VARCHAR(11) NOT NULL
+		,Fullname				VARCHAR(128) NOT NULL
+		,Date_of_birth			DATE NOT NULL
 		,UNIQUE (Phone)
         );	
 
@@ -48,7 +48,7 @@ Use CallCenterDB;
 		,destination_Id					VARCHAR(2048)
 		,destination_Fulladdress		VARCHAR(256)
 		,Status 						VARCHAR(128) default 'Create'
-		,pointCode						VARCHAR(2048)
+		,pointCode						VARCHAR(4096)
 		,distance_km					double
 		,SupportStaff_ID				INT
         , foreign key (Driver_ID) references Drivers(Driver_ID)
@@ -58,10 +58,11 @@ Use CallCenterDB;
 
 	
     CREATE TABLE CallCenterDB.Online_Driver (
-	Online_Driver_ID					INT PRIMARY KEY AUTO_INCREMENT,
-    Driver_ID		INT
+	ID		INT PRIMARY KEY AUTO_INCREMENT
+    ,Driver_ID		INT
     ,LNG			DOUBLE
     ,LAT			DOUBLE
+    ,UNIQUE (Driver_ID)
     ,Status		VARCHAR(100) default 'OffLine'
     ,foreign key (Driver_ID) references Drivers(Driver_ID)    
     )

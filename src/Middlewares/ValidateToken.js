@@ -14,7 +14,6 @@ const validateToken = ( req, res, next ) => {
         const verified  = jwt.verify( token, process.env.KEY_JWTOKEN );
         
         if(verified) {
-            console.log("next")
             next()            
         }else{
             // Access Denied
