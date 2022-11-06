@@ -16,7 +16,7 @@ Use CallCenterDB;
 		,Email					VARCHAR(128)
 		,Phone					VARCHAR(11)
 		,Password				VARCHAR(100)
-		,Fullname				VARCHAR(128)
+		,Fullname				VARCHAR(128) NOT NULL
 		,Date_of_birth			VARCHAR(11)
 		,role					VARCHAR(100) DEFAULT 'ROLE_PASSENGER'
 		,UNIQUE (Phone)
@@ -25,11 +25,11 @@ Use CallCenterDB;
         
 		CREATE TABLE CallCenterDB.Drivers (    
 		Driver_ID					INT 
-		,Car_owner					VARCHAR(128)
-		,Car_type					VARCHAR(128)
-		,Car_code					VARCHAR(128)
-		,Car_seat					INT
-		,Car_color					VARCHAR(128)
+		,Car_owner					VARCHAR(128) NOT NULL
+		,Car_type					VARCHAR(128) NOT NULL
+		,Car_code					VARCHAR(128) NOT NULL
+		,Car_seat					INT NOT NULL
+		,Car_color					VARCHAR(128) NOT NULL
         , primary key (Driver_ID)
         ,FOREIGN KEY (Driver_ID) REFERENCES Passengers(Passenger_ID)
 	);
