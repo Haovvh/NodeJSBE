@@ -1,5 +1,8 @@
 const { Router } = require('express');
-const { postJourney, postJourneybyuser, getJourneyByDriver, getJourneyByPassenger, getAllJourneyByPassenger, putJourney } = require('../Controller/JourneyController');
+const { postJourney, postJourneybyuser, getAllJourneyByPassengerID, 
+    getAllJourneyByDriverID,
+    getAllJourneyBySupportStaff,
+    getJourneyByDriver, getJourneyByPassenger, getAllJourneyByPassenger, putJourney } = require('../Controller/JourneyController');
 const { validateToken }  = require('../Middlewares/ValidateToken');
 
 const router = Router();
@@ -8,7 +11,13 @@ const router = Router();
     router.get('/journey/get-journey-by-driver', validateToken, getJourneyByDriver);
 
     router.get('/journey/get-journey-by-passenger', validateToken, getJourneyByPassenger);
-    
+    //getAllJourneyByPassengerID
+    router.get('/journey/get-all-journey-by-passengerID', validateToken, getAllJourneyByPassengerID);
+
+    router.get('/journey/get-all-journey-by-driverID', validateToken, getAllJourneyByDriverID);
+
+    router.get('/journey/get-all-journey-by-supportstaffID', validateToken, getAllJourneyBySupportStaff);
+
     router.get('/journey/get-all-journey-by-passenger', validateToken, getAllJourneyByPassenger);
 
     router.post('/journey/post-journey-by-user', validateToken, postJourneybyuser);

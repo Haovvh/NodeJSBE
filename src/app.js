@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors')
 require('dotenv').config();
 const MySql = require('./DB/MySql');
@@ -50,7 +49,6 @@ const io = require("socket.io")(httpServer, {
 
 
     socket.on("driveracceptjourney", async (data) => {
-      console.log("driver accept journey")
       console.log(data);
       io.to(data.socket_ID).emit("driverinfo", {
             Fullname: data.Fullname,
@@ -61,12 +59,7 @@ const io = require("socket.io")(httpServer, {
             Car_seat: data.Car_seat,
             Car_color: data.Car_color
       })
-        //const conn = await MySql();
-        //update
-        //await conn.query(`UPDATE online_driver SET LNG = ? , LAT = ? WHERE Driver_ID = ? `, [ data.LNG, data.LAT ,data.id ])
-        // delete and insert
-        //await conn.query(`DELETE FROM online_driver WHERE Driver_ID = ? `,[parseInt(data.id)]);
-        //await conn.query(`INSERT INTO online_driver (Driver_ID, LNG, LAT) Values ( ? , ? , ? ) `, [parseInt(data.id), parseFloat(data.LNG), parseFloat(data.LAT)]);
+        
     })
     
     //socket update 5s của driver
@@ -75,9 +68,7 @@ const io = require("socket.io")(httpServer, {
         const conn = await MySql();
         //update
         await conn.query(`UPDATE online_driver SET LNG = ? , LAT = ?, Status = 'Online' WHERE Driver_ID = ? `, [ data.LNG, data.LAT ,data.id ])
-        // delete and insert
-        //await conn.query(`DELETE FROM online_driver WHERE Driver_ID = ? `,[parseInt(data.id)]);
-        //await conn.query(`INSERT INTO online_driver (Driver_ID, LNG, LAT) Values ( ? , ? , ? ) `, [parseInt(data.id), parseFloat(data.LNG), parseFloat(data.LAT)]);
+        
     })
     
   });
@@ -95,14 +86,7 @@ app.use('/api', require("./Routes/userbyphone.routes"));
 app.use('/api', require("./Routes/driver.routes"));
 app.use('/api', require("./Routes/login.routes"));
 app.use('/api', require("./Routes/journey.routes"));
-//app.use('/api', require("./Routes/product.routes"));
-//app.use('/api', require("./Routes/category.routes"));
 
-// This folder will be Public
-//app.use( express.static( path.join( __dirname, 'Uploads/Profile') ));
-//app.use( express.static( path.join( __dirname, 'Uploads/Home' )));
-//app.use( express.static( path.join( __dirname, 'Uploads/Products' )));
-//app.use( express.static( path.join( __dirname, 'Uploads/Categories' )));
 
 httpServer.listen(process.env.PORT, () => {
     console.log(`Listening on port ${process.env.PORT}`);

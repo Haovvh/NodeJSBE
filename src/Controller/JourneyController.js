@@ -162,7 +162,6 @@ const getJourneyByPassenger = async (req = request, res = response) => {
     try {   
         console.log("get journey by passenger success")
         const Passenger_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
-        //const driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
         const conn = await MySql();
         
@@ -200,6 +199,130 @@ const getJourneyByPassenger = async (req = request, res = response) => {
             message: err
         });
     }
+}
+
+const getAllJourneyByPassengerID = async (req = request, res = response) => {    
+    
+    try {   
+        console.log("get All journey by passenger success")
+        const Passenger_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
+        
+        const conn = await MySql();
+        
+        const getalljourney = await conn.query(`
+        SELECT Passengers.Fullname, origin_Fulladdress, destination_Fulladdress, Price, distance_km, start_time, finish_time
+        FROM journeys LEFT JOIN Passengers on (journeys.Driver_ID = Passengers.Passenger_ID)
+        WHERE journeys.Passenger_ID = ? AND   Status = 'Success'         
+        `, [Passenger_ID]);        
+        conn.end();
+        console.log(getalljourney[0])
+
+        if( getalljourney[0].length !== 0 ){        
+            console.log("True")
+
+            return res.json({
+                resp: true,
+                message : 'Get journey is success!',
+                data: getalljourney[0]
+            });
+        
+        } else {
+            console.log("False")
+            return res.json({
+                resp: false,
+                message : 'No journey'
+            }); 
+    }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            resp: false,
+            message: error
+        });
+    } 
+}
+
+const getAllJourneyByDriverID = async (req = request, res = response) => {    
+    
+    try {   
+        console.log("getAllJourneyByDriverID")
+        const Driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
+        
+        const conn = await MySql();
+        
+        const getalljourney = await conn.query(`
+        SELECT Passengers.Fullname, origin_Fulladdress, destination_Fulladdress, Price, distance_km, start_time, finish_time
+        FROM journeys LEFT JOIN Passengers on (journeys.Passenger_ID = Passengers.Passenger_ID)
+        WHERE journeys.Driver_ID = ? AND   Status = 'Success'         
+        `, [Driver_ID]);        
+        conn.end();
+        console.log(getalljourney[0])
+
+        if( getalljourney[0].length !== 0 ){        
+            console.log("True")
+
+            return res.json({
+                resp: true,
+                message : 'Get journey is success!',
+                data: getalljourney[0]
+            });
+        
+        } else {
+            console.log("False")
+            return res.json({
+                resp: false,
+                message : 'No journey'
+            }); 
+    }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            resp: false,
+            message: error
+        });
+    } 
+}
+
+const getAllJourneyBySupportStaff = async (req = request, res = response) => {    
+    
+    try {   
+        console.log("getAllJourneyByDriverID")
+        const SupportStaff_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
+        
+        const conn = await MySql();
+        
+        const getalljourney = await conn.query(`
+        SELECT Passengers.Fullname as FullnameDriver, users.Fullname as FullnameUser , origin_Fulladdress, destination_Fulladdress, Price, distance_km, start_time, finish_time
+        FROM journeys LEFT JOIN Passengers on (journeys.Driver_ID = Passengers.Passenger_ID)
+        LEFT JOIN Users on (users.User_ID = journeys.User_ID)
+        WHERE journeys.SupportStaff_ID = ? AND   Status = 'Success'         
+        `, [SupportStaff_ID]);        
+        conn.end();
+        console.log(getalljourney[0])
+
+        if( getalljourney[0].length !== 0 ){        
+            console.log("True")
+
+            return res.json({
+                resp: true,
+                message : 'Get journey is success!',
+                data: getalljourney[0]
+            });
+        
+        } else {
+            console.log("False")
+            return res.json({
+                resp: false,
+                message : 'No journey'
+            }); 
+    }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            resp: false,
+            message: error
+        });
+    } 
 }
 
 const getAllJourneyByPassenger = async (req = request, res = response) => {    
@@ -276,5 +399,13 @@ const putJourney = async (req = request, res = response ) => {
 }
 
 module.exports = {
-    postJourney, getJourneyByDriver , getJourneyByPassenger, getAllJourneyByPassenger, putJourney, postJourneybyuser
+    postJourney, 
+    getJourneyByDriver, 
+    getAllJourneyByPassengerID,
+    getAllJourneyBySupportStaff,
+    getAllJourneyByDriverID,
+    getJourneyByPassenger, 
+    getAllJourneyByPassenger, 
+    putJourney, 
+    postJourneybyuser
 }
