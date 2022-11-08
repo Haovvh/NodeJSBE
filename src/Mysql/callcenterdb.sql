@@ -62,6 +62,7 @@ Use CallCenterDB;
     ,Driver_ID		INT
     ,LNG			DOUBLE
     ,LAT			DOUBLE
+    ,Car_seat		INT NOT NULL default 4
     ,UNIQUE (Driver_ID)
     ,Status		VARCHAR(100) default 'OffLine'
     ,foreign key (Driver_ID) references Drivers(Driver_ID)    

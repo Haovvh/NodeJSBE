@@ -21,14 +21,16 @@ const io = require("socket.io")(httpServer, {
     
     socket.on("calldriver", async (data) => {
       console.log("vao socket")
-      console.log(data.socket_ID)
+      console.log(data)
       console.log(socket.id)
       
       const conn = await MySql();
       //query 5 tài xế gần nhất
-      let driver = await conn.query(`SELECT Driver_ID FROM callcenterdb.online_driver WHERE (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [  data.origin.origin_lng, data.origin.origin_lat]);
+      let driver = await conn.query(`SELECT Driver_ID FROM online_driver WHERE Car_seat = ? AND Status = 'Online' AND (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [data.Car_seat,  data.origin.origin_lng, data.origin.origin_lat]);
       //ghi xem có thông tin driver không?
       console.log(driver[0]);
+      //nếu không có tìm trong bán kính 5km
+      let driver5km = await conn.query(`SELECT Driver_ID FROM online_driver WHERE Car_seat = ? AND Status = 'Online' AND (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [data.Car_seat,  data.origin.origin_lng, data.origin.origin_lat]);
       //broadcat toàn bộ driver
       socket.broadcast.emit("broadcat", { 
         //thông tin user, origin, destinaton ...

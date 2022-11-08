@@ -41,7 +41,7 @@ const postDriver = async (req = request, res = response) => {
         await conn.query(`INSERT INTO Drivers ( Driver_ID, Car_code, Car_color, Car_owner, Car_seat, Car_type ) 
         VALUES (? , ? , ? , ? , ? , ? ) `, 
         [ Driver_ID, Car_code, Car_color, Car_owner,Number(Car_seat) , Car_type ]);
-        await conn.query(`INSERT INTO online_driver (Driver_ID, LNG, LAT) Values ( ? , ? , ? ) `, [Driver_ID, 0, 0]);
+        await conn.query(`INSERT INTO online_driver (Driver_ID, LNG, LAT, Car_seat) Values ( ? , ? , ? , ?) `, [Driver_ID, 0, 0, Car_seat]);
         await conn.query(`UPDATE Passengers SET role = ? WHERE Passenger_ID = ? `, [ roles[1], Driver_ID ])
 
         conn.end();
