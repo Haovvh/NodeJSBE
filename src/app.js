@@ -25,17 +25,24 @@ const io = require("socket.io")(httpServer, {
       console.log(socket.id)
       
       const conn = await MySql();
+      
       //query 5 tài xế gần nhất
-      let driver = await conn.query(`SELECT Driver_ID FROM online_driver WHERE Car_seat = ? AND Status = 'Online' AND (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [data.Car_seat,  data.origin.origin_lng, data.origin.origin_lat]);
+      //Lỗi chọn xe bất kỳ không ra
+      var carsat = "";
+      if(data.Car_seat) {
+        carsat = ' AND Car_seat = ? ';
+      }
+      console.log(carsat)
+      let driver1km = await conn.query(`SELECT Driver_ID FROM online_driver WHERE Status = 'Online' ${carsat} AND (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [data.Car_seat,  data.origin.origin_lng, data.origin.origin_lat]);
       //ghi xem có thông tin driver không?
-      console.log(driver[0]);
+      console.log(driver1km[0]);
       //nếu không có tìm trong bán kính 5km
       let driver5km = await conn.query(`SELECT Driver_ID FROM online_driver WHERE Car_seat = ? AND Status = 'Online' AND (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [data.Car_seat,  data.origin.origin_lng, data.origin.origin_lat]);
       //broadcat toàn bộ driver
       socket.broadcast.emit("broadcat", { 
         //thông tin user, origin, destinaton ...
         user: data,
-        drivers: driver[0],
+        drivers: driver1km[0],
         socket_ID: socket.id
         //2h3X8Qv6x4jJhSJTAAKv
       });
@@ -88,6 +95,7 @@ app.use('/api', require("./Routes/userbyphone.routes"));
 app.use('/api', require("./Routes/driver.routes"));
 app.use('/api', require("./Routes/login.routes"));
 app.use('/api', require("./Routes/journey.routes"));
+app.use('/api', require("./Routes/onlinedriver.routes"));
 
 
 httpServer.listen(process.env.PORT, () => {

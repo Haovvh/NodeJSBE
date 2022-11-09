@@ -7,15 +7,18 @@ const roles = ['ROLE_PASSENGER','ROLE_DRIVER','ROLE_SUPPORTSTAFF'];
 const getDriver = async (req = request, res = response) => { 
    
     try {
+        console.log("getDriver")
         const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
 
         const conn = await MySql();
 
-        const rows = await conn.query(`SELECT Passengers.Fullname, Passengers.Date_of_birth, Passengers.Phone, Drivers.* FROM Drivers 
+        const rows = await conn.query(`SELECT online_driver.Status, Passengers.Fullname, Passengers.Date_of_birth, Passengers.Phone, Drivers.* FROM Drivers 
         LEFT JOIN Passengers on (Passengers.Passenger_ID = Drivers.Driver_ID)
-        WHERE Driver_ID = ? `, [_id]);
+        LEFT JOIN online_driver on (online_driver.Driver_ID = Drivers.Driver_ID)
+        WHERE Drivers.Driver_ID = ? `, [_id]);
         await conn.end();
-
+        
+        console.log(rows[0][0])
         return res.json({
             resp: true,
             message: 'Get Drivers',
@@ -23,6 +26,8 @@ const getDriver = async (req = request, res = response) => {
         });
 
     } catch (err) {
+        console.log("err")
+        console.log(err)
         return res.status(500).json({
             resp: false,
             message: err
