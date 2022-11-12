@@ -11,7 +11,6 @@ const jwt = require('jsonwebtoken');
 const postJourney = async (req = request, res = response) => {
     
     try {
-        console.log("vao post journey")
         const {Passenger_ID, 
             User_ID, 
             SupportStaff_ID,
@@ -24,27 +23,22 @@ const postJourney = async (req = request, res = response) => {
             distance_km, 
             pointCode} = req.body;
             
-        console.log(req.body);
         const conn = await MySql();
         var row;
         if(User_ID) {
-            console.log("User_ID")
             row = await conn.query(`SELECT * FROM journeys WHERE User_ID = ? AND Status = ? `, [ User_ID, 'Create']);
         }
         else {
-            console.log("Passenger_ID")
             row = await conn.query(`SELECT * FROM journeys WHERE Passenger_ID = ? AND Status = ? `, [ Passenger_ID, 'Create']);
         } 
         //check xem tài xế đã nhận chuyến đi chưa?
         
-        console.log(row[0][0])
         if( row[0].length === 0 ){
-            console.log("khoi tao journey")
             await conn.query(`INSERT INTO journeys 
             ( Passenger_ID, User_ID, SupportStaff_ID, Driver_ID, Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode) 
             VALUE (?,?,?,?,?,?,?,?,?,?,?);`, 
             [Passenger_ID, User_ID, (SupportStaff_ID), parseInt(driver_ID), Price, origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, distance_km, pointCode]);
-            console.log("Tao thanh cong journey")
+
             conn.end();
 
             return res.json({
@@ -54,7 +48,6 @@ const postJourney = async (req = request, res = response) => {
             });
         
         } else {
-            console.log("else post journey")
             return res.json({
                 resp: false,
                 message : 'Accept the trip is failed.'
@@ -72,7 +65,6 @@ const postJourney = async (req = request, res = response) => {
 const postJourneybyuser = async (req = request, res = response) => {
     
     try {
-        console.log("vao postJourneybyuser")
         const {driver_ID, 
             User_ID,
             SupportStaff_ID,
@@ -83,7 +75,6 @@ const postJourneybyuser = async (req = request, res = response) => {
             destination_Fulladdress, 
             distance_km, 
             pointCode} = req.body;    
-        console.log(req.body)
         
         
         const conn = await MySql();
@@ -113,7 +104,6 @@ const postJourneybyuser = async (req = request, res = response) => {
 const getJourneyByDriver = async (req = request, res = response) => {    
     
     try {   
-        console.log("get Journey By Driver")
         const driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         //const driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
@@ -127,15 +117,13 @@ const getJourneyByDriver = async (req = request, res = response) => {
         LEFT JOIN Users on (journeys.User_ID = Users.User_ID)
         WHERE Driver_ID = ? AND Status = 'Create' `, [driver_ID]);        
         conn.end();
-        if( getalljourney[0].length !== 0 ){        
-            console.log("True")
+        if( getalljourney[0].length !== 0 ){  
             if(!getalljourney[0][0].Passenger_ID) {
                 console.log("Passenger ID")
                 getalljourney[0][0].Fullname = getalljourney[0][0].FullnameUser;
                 getalljourney[0][0].Phone = getalljourney[0][0].PhoneUser
 
             } 
-            console.log(getalljourney[0][0])
             return res.json({
                 resp: true,
                 message : 'Get journey is success!',
@@ -162,7 +150,6 @@ const getJourneyByDriver = async (req = request, res = response) => {
 const getJourneyByPassenger = async (req = request, res = response) => {    
     
     try {   
-        console.log("get journey by passenger success")
         const Passenger_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
         const conn = await MySql();
@@ -206,7 +193,6 @@ const getJourneyByPassenger = async (req = request, res = response) => {
 const getAllJourneyByPassengerID = async (req = request, res = response) => {    
     
     try {   
-        console.log("get All journey by passenger success")
         const Passenger_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
         const conn = await MySql();
@@ -217,10 +203,8 @@ const getAllJourneyByPassengerID = async (req = request, res = response) => {
         WHERE journeys.Passenger_ID = ? AND   Status = 'Success'         
         `, [Passenger_ID]);        
         conn.end();
-        console.log(getalljourney[0])
 
-        if( getalljourney[0].length !== 0 ){        
-            console.log("True")
+        if( getalljourney[0].length !== 0 ){ 
 
             return res.json({
                 resp: true,
@@ -229,7 +213,6 @@ const getAllJourneyByPassengerID = async (req = request, res = response) => {
             });
         
         } else {
-            console.log("False")
             return res.json({
                 resp: false,
                 message : 'No journey'
@@ -258,10 +241,8 @@ const getAllJourneyByDriverID = async (req = request, res = response) => {
         WHERE journeys.Driver_ID = ? AND   Status = 'Success'         
         `, [Driver_ID]);        
         conn.end();
-        console.log(getalljourney[0])
 
-        if( getalljourney[0].length !== 0 ){        
-            console.log("True")
+        if( getalljourney[0].length !== 0 ){     
 
             return res.json({
                 resp: true,
@@ -300,7 +281,6 @@ const getAllJourneyBySupportStaff = async (req = request, res = response) => {
         WHERE journeys.SupportStaff_ID = ? AND   Status = 'Success'         
         `, [SupportStaff_ID]);        
         conn.end();
-        console.log(getalljourney[0])
 
         if( getalljourney[0].length !== 0 ){        
             console.log("True")
@@ -330,7 +310,6 @@ const getAllJourneyBySupportStaff = async (req = request, res = response) => {
 const getAllJourneyByPassenger = async (req = request, res = response) => {    
     
     try {   
-        console.log("get All journey by passenger success")
         const Passenger_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
         const conn = await MySql();

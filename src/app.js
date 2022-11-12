@@ -29,7 +29,7 @@ const io = require("socket.io")(httpServer, {
       if(data.Car_seat) {
         carsat = ' AND Car_seat = ? ';
       }
-      console.log(carsat)
+      console.log(carsat + "001")
       let driver1km = await conn.query(`SELECT Driver_ID FROM online_driver WHERE Status = 'Online' ${carsat} AND (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [data.Car_seat,  data.origin.origin_lng, data.origin.origin_lat]);
       //ghi xem có thông tin driver không?
       console.log(driver1km[0]);
@@ -40,23 +40,29 @@ const io = require("socket.io")(httpServer, {
         //thông tin user, origin, destinaton ...
         user: data,
         drivers: driver1km[0],
-        socket_ID: socket.id
+        room: data.room
         //2h3X8Qv6x4jJhSJTAAKv
       });
     });
     //successjourney
     socket.on("successjourney", async (data) => {
-      console.log("driver accept journey")
       console.log(data);
-      io.to(data.socket_ID).emit("successpassenger", {
+      socket.to(data.room).emit("successpassenger", {
             Status: data.Status
       })
     })
 
+    socket.on("join_room", (data) => {
+      console.log(data)
+      socket.join(data.room);
+      console.log(`User with ID: ${socket.id} joined room: ${data.room}`);
+    });
+  
+
 
     socket.on("driveracceptjourney", async (data) => {
-      console.log(data);
-      io.to(data.socket_ID).emit("driverinfo", {
+      console.log(data)
+      socket.to(data.room).emit("driverinfo", {
             Fullname: data.Fullname,
             Phone: data.Phone,
             Driver_ID: data.Driver_ID,
@@ -70,7 +76,7 @@ const io = require("socket.io")(httpServer, {
     
     //socket update 5s của driver
     socket.on("update_lat_lng", async (data) => {
-      console.log(data);
+      console.log(data)
         const conn = await MySql();
         //update
         await conn.query(`UPDATE online_driver SET LNG = ? , LAT = ? WHERE Driver_ID = ? `, [ data.LNG, data.LAT ,data.id ])
