@@ -12,7 +12,8 @@ const getDriver = async (req = request, res = response) => {
 
         const conn = await MySql();
 
-        const rows = await conn.query(`SELECT online_driver.Status, Passengers.Fullname, Passengers.Date_of_birth, Passengers.Phone, Drivers.* FROM Drivers 
+        const rows = await conn.query(`SELECT online_driver.Status, Passengers.Fullname, 
+        Passengers.Date_of_birth, Passengers.Phone, Drivers.* FROM Drivers 
         LEFT JOIN Passengers on (Passengers.Passenger_ID = Drivers.Driver_ID)
         LEFT JOIN online_driver on (online_driver.Driver_ID = Drivers.Driver_ID)
         WHERE Drivers.Driver_ID = ? `, [_id]);
@@ -87,7 +88,6 @@ const putDriver = async (req = request, res = response) => {
             message: err
         });
     } 
-
 }
 
 module.exports = {

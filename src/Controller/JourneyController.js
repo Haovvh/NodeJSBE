@@ -11,7 +11,7 @@ const jwt = require('jsonwebtoken');
 const postJourney = async (req = request, res = response) => {
     
     try {
-        console.log("vao postjourney")
+        console.log("vao post journey")
         const {Passenger_ID, 
             User_ID, 
             SupportStaff_ID,
@@ -23,8 +23,10 @@ const postJourney = async (req = request, res = response) => {
             destination_Fulladdress, 
             distance_km, 
             pointCode} = req.body;
+            
+        console.log(req.body);
         const conn = await MySql();
-        let row;
+        var row;
         if(User_ID) {
             console.log("User_ID")
             row = await conn.query(`SELECT * FROM journeys WHERE User_ID = ? AND Status = ? `, [ User_ID, 'Create']);
@@ -35,7 +37,7 @@ const postJourney = async (req = request, res = response) => {
         } 
         //check xem tài xế đã nhận chuyến đi chưa?
         
-        
+        console.log(row[0][0])
         if( row[0].length === 0 ){
             console.log("khoi tao journey")
             await conn.query(`INSERT INTO journeys 
@@ -55,7 +57,7 @@ const postJourney = async (req = request, res = response) => {
             console.log("else post journey")
             return res.json({
                 resp: false,
-                message : 'Tài xế khác đã nhận chuyến. Nhận chuyến thật bại.'
+                message : 'Accept the trip is failed.'
             }); 
         }
     } catch (error) {
@@ -70,7 +72,7 @@ const postJourney = async (req = request, res = response) => {
 const postJourneybyuser = async (req = request, res = response) => {
     
     try {
-        console.log("vao postjourney")
+        console.log("vao postJourneybyuser")
         const {driver_ID, 
             User_ID,
             SupportStaff_ID,

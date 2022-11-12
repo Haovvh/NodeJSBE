@@ -14,7 +14,7 @@ const postUserbyPhone = async (req = request, res = response) => {
         console.log("post User")
         const { Fullname, Phone, Date_of_birth } = req.body;
         console.log(req.body)
-        const conn = await MySql();
+        const conn = await MySql(); 
 
         const hasPhone = await conn.query(`SELECT Phone FROM Users WHERE Phone = ? `, [Phone]);
 

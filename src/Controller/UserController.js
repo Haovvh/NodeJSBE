@@ -135,7 +135,7 @@ const getUser = async (req = request, res = response ) => {
         await conn.end();
         if(rows[0].length > 0) {
             console.log("Có passenger");
-            return res.json({
+            return res.json({   
                 resp: true,
                 message: 'Get Passengers',
                 data: rows[0][0]
