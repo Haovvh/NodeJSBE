@@ -269,7 +269,6 @@ const getAllJourneyByDriverID = async (req = request, res = response) => {
 const getAllJourneyBySupportStaff = async (req = request, res = response) => {    
     
     try {   
-        console.log("getAllJourneyByDriverID")
         const SupportStaff_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         
         const conn = await MySql();

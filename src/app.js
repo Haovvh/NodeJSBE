@@ -20,7 +20,6 @@ const io = require("socket.io")(httpServer, {
   io.on("connection", (socket) => {
     //mở kết nối khi frontend gọi socket.emit('calldriver')
     socket.on("calldriver", async (data) => {
-      console.log(data)
 
       const conn = await MySql();      
       //query 5 tài xế gần nhất
@@ -76,10 +75,16 @@ const io = require("socket.io")(httpServer, {
     
     //socket update 5s của driver
     socket.on("update_lat_lng", async (data) => {
-      console.log(data)
+      //console.log(data)
         const conn = await MySql();
         //update
-        await conn.query(`UPDATE online_driver SET LNG = ? , LAT = ? WHERE Driver_ID = ? `, [ data.LNG, data.LAT ,data.id ])
+        await conn.query(`UPDATE online_driver SET LNG = ? , LAT = ? WHERE Driver_ID = ? `, [ data.LNG, data.LAT ,data.id ],function(err, result, callback) {
+          if(err) {
+            console.log(err.message);
+         }
+        })
+        //await conn.query('select 1+1')
+        //
         
     })
     

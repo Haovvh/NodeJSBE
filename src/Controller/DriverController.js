@@ -7,7 +7,6 @@ const roles = ['ROLE_PASSENGER','ROLE_DRIVER','ROLE_SUPPORTSTAFF'];
 const getDriver = async (req = request, res = response) => { 
    
     try {
-        console.log("getDriver")
         const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
 
         const conn = await MySql();
@@ -19,7 +18,6 @@ const getDriver = async (req = request, res = response) => {
         WHERE Drivers.Driver_ID = ? `, [_id]);
         await conn.end();
         
-        console.log(rows[0][0])
         return res.json({
             resp: true,
             message: 'Get Drivers',
@@ -39,7 +37,6 @@ const getDriver = async (req = request, res = response) => {
 const postDriver = async (req = request, res = response) => {
     
     try {
-        console.log("Vao post Driver")
         const Driver_ID = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         const { Car_code, Car_color, Car_owner, Car_seat, Car_type } = req.body;        
         console.log(req.body)

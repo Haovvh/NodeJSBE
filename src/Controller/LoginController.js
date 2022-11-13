@@ -7,7 +7,6 @@ const { generarJsonWebToken } = require('../Helpers/JWToken');
 const Login = async ( req = request, res = response ) => {
 
    try {
-        console.log("Login")
         const { password, email } = req.body;    
         const conn = await MySql();        
         const existsEmail = await conn.query(`SELECT Passenger_ID, 
@@ -21,7 +20,6 @@ const Login = async ( req = request, res = response ) => {
                 message : 'Wrong Email'
             });
         }
-        console.log("Success")
         const validatedPassword = await bcrypt.compareSync( password, existsEmail[0][0].Password );
 
         if( !validatedPassword ){
@@ -37,7 +35,7 @@ const Login = async ( req = request, res = response ) => {
         const token = await generarJsonWebToken( existsEmail[0][0].Passenger_ID,existsEmail[0][0].Password,
              existsEmail[0][0].Fullname,existsEmail[0][0].Email,existsEmail[0][0].role);    
         conn.end();
-        console.log(existsEmail[0][0].Phone != null)
+        
         return res.json({
             resp: true,
             message : 'Welcome Go Car VietNam',
