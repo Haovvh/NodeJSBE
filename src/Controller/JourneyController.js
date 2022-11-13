@@ -111,6 +111,7 @@ const getJourneyByDriver = async (req = request, res = response) => {
         const getalljourney = await conn.query(`SELECT journeys.pointCode, journeys.Price, 
         journeys.origin_Fulladdress , journeys.destination_Fulladdress,
         Passengers.Passenger_ID, Passengers.Fullname , Passengers.Phone ,
+        SupportStaff_ID,
         Users.Fullname as FullnameUser, Users.Phone as PhoneUser
         FROM journeys 
         LEFT JOIN Passengers on (journeys.Passenger_ID = Passengers.Passenger_ID)
