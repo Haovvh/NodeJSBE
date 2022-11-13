@@ -123,7 +123,7 @@ const getJourneyByDriver = async (req = request, res = response) => {
                 console.log("Passenger ID")
                 getalljourney[0][0].Fullname = getalljourney[0][0].FullnameUser;
                 getalljourney[0][0].Phone = getalljourney[0][0].PhoneUser
-
+    
             } 
             return res.json({
                 resp: true,
