@@ -30,7 +30,34 @@ const putOnlineDriver = async (req = request, res = response) => {
     } 
 
 }
+const put5SecondOnlineDriver = async (req = request, res = response) => {
+
+    
+    try {
+        console.log("putOnlineDriver")
+        const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
+        console.log(_id)
+        const {LAT, LNG} = req.body;        
+        console.log(req.body)
+        const conn = await MySql();
+        await conn.query(`UPDATE online_driver SET  LNG = ?, LAT = ? 
+        WHERE (Driver_ID = ?)`, [LNG, LAT, _id ]);
+        
+        conn.end();
+        return res.json({
+            resp: true,
+            message : 'Update Status success!'
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            resp: false,
+            message: err
+        });
+    } 
+
+}
 
 module.exports = {
-    putOnlineDriver
+    putOnlineDriver, put5SecondOnlineDriver
 }
