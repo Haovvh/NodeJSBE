@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const MySql = require('../DB/MySql');
 const jwt = require('jsonwebtoken');
 const {decodeToken} = require('../Middlewares/decodeToken');
-const { Console } = require('console');
 
 //getUserById, postUser, changeFotoProfile, putUser
 const postUserbyPhone = async (req = request, res = response) => {
@@ -39,11 +38,11 @@ const postUserbyPhone = async (req = request, res = response) => {
             }); 
         }
         
-    } catch (err) {
-        console.log(err)
+    } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         }); 
     }
     
@@ -81,11 +80,11 @@ const putUserbyPhone = async (req = request, res = response) => {
             }); 
         }
         
-    } catch (err) {
-        console.log(err)
+    } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         }); 
     }
     
@@ -147,11 +146,11 @@ const getUserbyPhone = async (req = request, res = response ) => {
             count: countPlace[0]
         });      
         
-    } catch (err) {
-        console.log(err)
+    } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         });
     }
 }

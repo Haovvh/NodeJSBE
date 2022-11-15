@@ -37,9 +37,10 @@ const postUser = async (req = request, res = response) => {
         }
         
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         }); 
     }
     
@@ -65,11 +66,11 @@ const putUserToSupportStaff = async (req = request, res = response) => {
             }); 
         }
         
-    } catch (err) {
-        console.log(err)
+    } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         }); 
     }
     
@@ -104,11 +105,11 @@ const putUser = async (req = request, res = response) => {
             }); 
         }
         
-    } catch (err) {
-        console.log(err)
+    } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         }); 
     }
     
@@ -143,11 +144,11 @@ const getUser = async (req = request, res = response ) => {
         }
         
         
-    } catch (err) {
-        console.log(err)
+    } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         });
     }
 }
@@ -173,10 +174,11 @@ const changeFotoProfile = async ( req = request, res = response ) => {
             message: 'Updated image'
         });
         
-    } catch (err) {
+    } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         }); 
     }
 }

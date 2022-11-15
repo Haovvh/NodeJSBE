@@ -142,7 +142,7 @@ const getJourneyByDriver = async (req = request, res = response) => {
         console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         });
     }
     
@@ -186,7 +186,7 @@ const getJourneyByPassenger = async (req = request, res = response) => {
         console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         });
     }
 }
@@ -372,6 +372,7 @@ const putJourney = async (req = request, res = response ) => {
         });
         
     } catch (err) {
+        console.log(err)
         return res.status(500).json({
             resp: false,
             message: err

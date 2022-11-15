@@ -1,7 +1,6 @@
 const { response, request } = require('express');
 const MySql = require('../DB/MySql');
 const {decodeToken} = require('../Middlewares/decodeToken')
-//getDriver, postDriver, putDriver
 
 
 const putOnlineDriver = async (req = request, res = response) => {
@@ -23,9 +22,10 @@ const putOnlineDriver = async (req = request, res = response) => {
         });
         
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         });
     } 
 
@@ -36,9 +36,7 @@ const put5SecondOnlineDriver = async (req = request, res = response) => {
     try {
         console.log("put 5 SecondOnline Driver")
         const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
-        console.log(_id)
-        const {LAT, LNG} = req.body;        
-        console.log(req.body)
+        const {LAT, LNG} = req.body;       
         const conn = await MySql();
         await conn.query(`UPDATE online_driver SET  LNG = ?, LAT = ? 
         WHERE (Driver_ID = ?)`, [LNG, LAT, _id ]);
@@ -50,9 +48,10 @@ const put5SecondOnlineDriver = async (req = request, res = response) => {
         });
         
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         });
     } 
 

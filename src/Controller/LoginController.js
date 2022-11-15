@@ -46,11 +46,11 @@ const Login = async ( req = request, res = response ) => {
             Phone: (existsEmail[0][0].Phone != null)
         });       
 
-   } catch (err) {
-    console.log(err)
+   } catch (error) {
+    console.log(error)
         return res.status(500).json({
             resp: false,
-            message : err
+            message : error
         });
    }
 }
@@ -97,10 +97,11 @@ const changePassword = async ( req = request, res = response ) => {
             name: existsEmail[0][0].Fullname
         });       
 
-   } catch (err) {
+   } catch (error) {
+    console.log(error)
         return res.status(500).json({
             resp: false,
-            message : err
+            message : error
         });
    }
 }

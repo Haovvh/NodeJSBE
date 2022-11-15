@@ -24,12 +24,11 @@ const getDriver = async (req = request, res = response) => {
             data: rows[0][0]
         });
 
-    } catch (err) {
-        console.log("err")
-        console.log(err)
+    } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         });
     }
 }
@@ -53,11 +52,11 @@ const postDriver = async (req = request, res = response) => {
             resp: true,
             message : 'Create Driver success!'
         });
-    } catch (err) {
-        console.log(err)
+    } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         });
     } 
 }
@@ -80,9 +79,10 @@ const putDriver = async (req = request, res = response) => {
         });
         
     } catch (error) {
+        console.log(error)
         return res.status(500).json({
             resp: false,
-            message: err
+            message: error
         });
     } 
 }
