@@ -34,7 +34,7 @@ const put5SecondOnlineDriver = async (req = request, res = response) => {
 
     
     try {
-        console.log("putOnlineDriver")
+        console.log("put 5 SecondOnline Driver")
         const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         console.log(_id)
         const {LAT, LNG} = req.body;        

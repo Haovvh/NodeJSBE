@@ -34,6 +34,7 @@ const io = require("socket.io")(httpServer, {
       console.log(driver1km[0]);
       //nếu không có tìm trong bán kính 5km
       let driver5km = await conn.query(`SELECT Driver_ID FROM online_driver WHERE Car_seat = ? AND Status = 'Online' AND (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [data.Car_seat,  data.origin.origin_lng, data.origin.origin_lat]);
+      conn.end();
       //broadcat toàn bộ driver
       socket.broadcast.emit("broadcat", { 
         //thông tin user, origin, destinaton ...
