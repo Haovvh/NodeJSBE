@@ -74,22 +74,7 @@ const io = require("socket.io")(httpServer, {
         
     })
     
-    //socket update 5s của driver
-    // socket.on("update_lat_lng", async (data) => {
-    //   console.log(data)
-    //     const conn = await MySql();
-    //     //update
-    //     await conn.getConnection();
-    //     await conn.query(`UPDATE online_driver SET LNG = ? , LAT = ? WHERE Driver_ID = ? `, [ data.LNG, data.LAT ,data.id ],function(err, result, callback) {
-    //       if(err) {
-    //         console.log(err.message);
-    //      }
-    //     })
-    //     conn.end()
-    //     //await conn.query('select 1+1')
-    //     //
-        
-    // })
+    
     
   });
   
@@ -106,7 +91,6 @@ app.use('/api', require("./Routes/userbyphone.routes"));
 app.use('/api', require("./Routes/driver.routes"));
 app.use('/api', require("./Routes/login.routes"));
 app.use('/api', require("./Routes/journey.routes"));
-app.use('/api', require("./Routes/onlinedriver.routes"));
 app.use('/api', require("./Routes/onlinedriver.routes"));
 
 httpServer.listen(process.env.PORT, () => {
