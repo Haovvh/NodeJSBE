@@ -7,7 +7,6 @@ const putOnlineDriver = async (req = request, res = response) => {
 
     
     try {
-        console.log("putOnlineDriver")
         const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         const {Status} = req.body;        
         console.log(Status)
@@ -34,7 +33,6 @@ const put5SecondOnlineDriver = async (req = request, res = response) => {
 
     
     try {
-        console.log("put 5 SecondOnline Driver")
         const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
         const {LAT, LNG} = req.body;       
         const conn = await MySql();

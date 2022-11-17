@@ -58,12 +58,18 @@ const putUserbyPhone = async (req = request, res = response) => {
         console.log(req.body)
         const conn = await MySql();
 
-        const hasPhone = await conn.query('SELECT Phone FROM Passengers WHERE Phone = ? AND Passenger_ID != ?', [Phone, Passenger_ID]);
+        const hasPhone = await conn.query(`SELECT Phone 
+        FROM Passengers 
+        WHERE Phone = ? AND Passenger_ID != ?`, 
+        [Phone, Passenger_ID]);
+
         console.log(hasPhone[0])
         if( hasPhone[0].length == 0 ){
             
-            await conn.query(`UPDATE Passengers SET Phone = ?, Date_of_birth = ?,  Fullname = ?
-                WHERE Passenger_ID = ?`, [ Phone, Date_of_birth, Fullname, Passenger_ID ]);
+            await conn.query(`UPDATE Passengers 
+            SET Phone = ?, Date_of_birth = ?,  Fullname = ?
+            WHERE Passenger_ID = ?`, 
+            [ Phone, Date_of_birth, Fullname, Passenger_ID ]);
             conn.end();
             console.log("True")
             return res.json({
@@ -107,7 +113,9 @@ const getUserbyPhone = async (req = request, res = response ) => {
         }
         const conn = await MySql();
         console.log(Phone)
-        const rows = await conn.query(`SELECT User_ID, Fullname, Date_of_birth FROM users WHERE Phone = ? `, [Phone]);
+        const rows = await conn.query(`SELECT User_ID, Fullname, Date_of_birth 
+        FROM users WHERE Phone = ? `, 
+        [Phone]);
         console.log(rows[0])
         if(rows[0].length === 0) {
             console.log("No user")
@@ -118,9 +126,24 @@ const getUserbyPhone = async (req = request, res = response ) => {
             })            
         }
         const address = await conn.query(`SELECT start_time, origin_Fulladdress, destination_Fulladdress 
-        FROM journeys WHERE User_ID = ? ORDER BY start_time DESC
+        FROM journeys 
+        WHERE User_ID = ? 
+        ORDER BY start_time DESC
         `,[parseInt(rows[0][0].User_ID)])
         console.log(address[0])
+        /*
+        SELECT origin_Fulladdress, COUNT(origin_Id) AS Count
+        FROM journeys 
+        WHERE User_ID = ? AND   Status = 'Success' 
+        GROUP BY origin_Id 
+        union
+        SELECT destination_Fulladdress, COUNT(destination_Id) AS Count
+        FROM journeys 
+        WHERE User_ID = ? AND   Status = 'Success' 
+        GROUP BY destination_Id
+        ORDER BY COUNT DESC
+        LIMIT 5
+        */
         const countPlace = await conn.query(`
         SELECT origin_Fulladdress, COUNT(origin_Id) AS Count
         FROM journeys 

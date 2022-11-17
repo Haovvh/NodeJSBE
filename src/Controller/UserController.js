@@ -98,7 +98,6 @@ const putUser = async (req = request, res = response) => {
             });
         
         } else {
-            console.log("False")
             return res.json({
                 resp: false,
                 message : 'Phone already exists'
