@@ -20,7 +20,7 @@ const io = require("socket.io")(httpServer, {
   io.on("connection", (socket) => {
     //mở kết nối khi frontend gọi socket.emit('calldriver')
     socket.on("calldriver", async (data) => {
-
+      console.log(data);
       const conn = await MySql();      
       //query 5 tài xế gần nhất
       //Lỗi chọn xe bất kỳ không ra

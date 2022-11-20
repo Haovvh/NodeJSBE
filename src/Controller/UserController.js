@@ -10,7 +10,11 @@ const {decodeToken} = require('../Middlewares/decodeToken')
 const postUser = async (req = request, res = response) => {
 
     try {
-        const { password, username, email  } = req.body;    
+        const { password, username, email, phone  } = req.body;   
+        console.log(req.body) 
+        console.log(req.params)
+        console.log(req.headers)
+        
         const salt = bcrypt.genSaltSync();
         const pass = bcrypt.hashSync( password, salt );
 
@@ -18,9 +22,25 @@ const postUser = async (req = request, res = response) => {
 
         const hasEmail = await conn.query('SELECT Email FROM Passengers WHERE Email = ?', [email]);
 
-        if( hasEmail[0].length == 0 ){
+        const hasPhone = await conn.query('SELECT Phone FROM Passengers WHERE Phone = ?', [phone]);
+
+        if( hasEmail[0].length > 0 ){
+            return res.json({
+                resp: false,
+                message : 'Email already exists'
+            });
+
+            
+        
+        } else if (hasPhone[0].length >0) {
+
+             return res.json({
+                resp: false,
+                message : 'Phone already exists'
+            });
+        } else {
             await conn.query(`INSERT INTO Passengers ( Fullname, 
-                Email, Password ) VALUE (?,?,?);`, [ username, email, pass ]);
+                Email, Password, Phone ) VALUE (?,?,?, ?);`, [ username, email, pass, phone ]);
 
             conn.end();
 
@@ -28,12 +48,6 @@ const postUser = async (req = request, res = response) => {
                 resp: true,
                 message : 'Email ' + email +' success!'
             });
-        
-        } else {
-            return res.json({
-                resp: false,
-                message : 'Email already exists'
-            }); 
         }
         
     } catch (error) {

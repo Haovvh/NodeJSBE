@@ -34,7 +34,8 @@ const put5SecondOnlineDriver = async (req = request, res = response) => {
     
     try {
         const _id = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).id
-        const {LAT, LNG} = req.body;       
+        const {LAT, LNG} = req.body;   
+        console.log(`Update : IDDRiver ${_id}  LAT: ${LAT}   LNG ${LNG}`)    
         const conn = await MySql();
         await conn.query(`UPDATE online_driver SET  LNG = ?, LAT = ? 
         WHERE (Driver_ID = ?)`, [LNG, LAT, _id ]);

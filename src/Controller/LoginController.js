@@ -8,6 +8,7 @@ const Login = async ( req = request, res = response ) => {
 
    try {
         const { password, email } = req.body;    
+        console.log(req.body);
         const conn = await MySql();        
         const existsEmail = await conn.query(`SELECT Passenger_ID, 
         Fullname, Email, Password, Phone, role 
@@ -20,6 +21,7 @@ const Login = async ( req = request, res = response ) => {
                 message : 'Wrong Email'
             });
         }
+        console.log(existsEmail[0][0])
         const validatedPassword = await bcrypt.compareSync( password, existsEmail[0][0].Password );
 
         if( !validatedPassword ){

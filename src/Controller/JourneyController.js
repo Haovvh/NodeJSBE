@@ -374,6 +374,7 @@ const putJourney = async (req = request, res = response ) => {
     try {
         console.log("put journey")
         const {driver_ID, SupportStaff_ID} = req.body;
+        
         console.log(req.body);
         const conn = await MySql();
 
