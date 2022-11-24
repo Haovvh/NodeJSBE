@@ -6,6 +6,11 @@ const MySql = require('../DB/MySql');
 const jwt = require('jsonwebtoken');
 const {decodeToken} = require('../Middlewares/decodeToken');
 
+Date.prototype.addHours  = function(hours) {
+    this.setTime(this.getTime() + parseInt(hours*60*60*1000));
+    return this;
+};
+
 //getUserById, postUser, changeFotoProfile, putUser
 const postUserbyPhone = async (req = request, res = response) => {
 
@@ -159,15 +164,28 @@ const getUserbyPhone = async (req = request, res = response ) => {
         `,[parseInt(rows[0][0].User_ID), parseInt(rows[0][0].User_ID)])
         await conn.end();
         console.log(countPlace[0])
-        
-        console.log("Có User");
-        return res.json({
-            resp: true,
-            message: 'Get Users',
-            data: rows[0][0],
-            address: address[0],
-            count: countPlace[0]
-        });      
+        if(address[0].length > 0 && countPlace[0] > 0){
+            for(let i =0 ; i < address[0].length; i++) {
+                address[0][i].start_time.addHours(7);
+    
+                address[0][i].start_time = address[0][i].start_time.toLocaleString();
+            }
+            return res.json({
+
+                resp: true,
+                message: 'Get Users',
+                data: rows[0][0],
+                address: address[0],
+                count: countPlace[0]
+            });    
+            
+        } else {
+            return res.json({
+                resp: false,
+                message: 'No History',
+            })
+        }
+         
         
     } catch (error) {
         console.log(error)
