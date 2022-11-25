@@ -20,10 +20,15 @@ const postJourney = async (req = request, res = response) => {
             SupportStaff_ID,
             driver_ID, 
             Price, 
+            
             origin_Id, 
             origin_Fulladdress, 
+            origin_lat, 
+            origin_lng, 
             destination_Id, 
             destination_Fulladdress, 
+            destination_lat, 
+            destination_lng, 
             distance_km, 
             pointCode} = req.body;
             
@@ -42,11 +47,14 @@ const postJourney = async (req = request, res = response) => {
         if( row[0].length === 0 ){
             await conn.query(`INSERT INTO journeys 
             ( Passenger_ID, User_ID, SupportStaff_ID, Driver_ID, Price, 
-                origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, 
+                origin_Id, origin_Fulladdress, origin_lat, 
+                origin_lng, destination_Id, destination_Fulladdress, destination_lat, 
+                destination_lng, 
                 distance_km, pointCode) 
-            VALUE (?,?,?,?,?,?,?,?,?,?,?);`, 
+            VALUE (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?, ?, ?);`, 
             [Passenger_ID, User_ID, (SupportStaff_ID), parseInt(driver_ID), Price, 
-                origin_Id, origin_Fulladdress, destination_Id, destination_Fulladdress, 
+                origin_Id, origin_Fulladdress, origin_lat, origin_lng, destination_Id, destination_Fulladdress, 
+                destination_lat, destination_lng, 
                 distance_km, pointCode]);
 
             conn.end();

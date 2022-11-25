@@ -20,31 +20,62 @@ const io = require("socket.io")(httpServer, {
   io.on("connection", (socket) => {
     //mở kết nối khi frontend gọi socket.emit('calldriver')
     socket.on("calldriver", async (data) => {
-      console.log(data);
+      console.log(data.origin)
       const conn = await MySql();      
       //query 5 tài xế gần nhất
       //Lỗi chọn xe bất kỳ không ra
       var carsat = "";
       if(data.Car_seat) {
-        carsat = ' AND Car_seat = ? ';
+        carsat = ` AND Car_seat = ${data.Car_seat} `;
       }
-      console.log(carsat + "001")
-      let driver1km = await conn.query(`SELECT Driver_ID FROM online_driver WHERE Status = 'Online' ${carsat} AND (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [data.Car_seat,  data.origin.origin_lng, data.origin.origin_lat]);
-      //ghi xem có thông tin driver không?
+      const _distance = [2, 5];
+      console.log(_distance[0] + " " + _distance[1])
+      let query = `select Driver_ID, sqrt(pow(69.1 * (LAT-${data.origin.origin_lat}),2) + pow(69.1 * (${data.origin.origin_lng}-LNG)* COS(LAT/57.3) ,2)) as distance
+      FROM online_driver
+      WHERE Status = 'Online' ${carsat}
+      having distance < ?
+      order by distance 
+      limit 5`;
+      console.log(query)
+      let driver1km = await conn.query(query, [ _distance[0]]);
       console.log(driver1km[0]);
-      //nếu không có tìm trong bán kính 5km
-      let driver5km = await conn.query(`SELECT Driver_ID FROM online_driver WHERE Car_seat = ? AND Status = 'Online' AND (POWER((LNG - ?),2) + POWER((LAT- ?),2) > 0 ) LIMIT 5`, [data.Car_seat,  data.origin.origin_lng, data.origin.origin_lat]);
-      conn.end();
+      //ghi xem có thông tin driver không?
+      if(driver1km[0].length === 0 ) {
+        driver1km = await conn.query(query, [data.Car_seat,  _distance[1]]);
+        conn.end();
+        if(driver1km[0].length === 0){
+          console.log("nodriver")
+          io.to(data.room).emit("nodriver", {
+            data: data.room 
+          })
+          socket.on('disconnect', function(){
+            console.log("disconnected!");
+          });
+        } else {
+      
+      //broadcat toàn bộ driver
+        socket.broadcast.emit("broadcat", { 
+          //thông tin user, origin, destinaton ...
+          user: data,
+          drivers: driver1km[0],
+          room: data.room
+          //2h3X8Qv6x4jJhSJTAAKv
+        });
+        }
+      } else {
+        conn.end();
+      
       //broadcat toàn bộ driver
       socket.broadcast.emit("broadcat", { 
         //thông tin user, origin, destinaton ...
         user: data,
         drivers: driver1km[0],
         room: data.room
-        //2h3X8Qv6x4jJhSJTAAKv
       });
+      }
+      
+      
     });
-    //successjourney
     socket.on("successjourney", async (data) => {
       console.log(data);
       socket.to(data.room).emit("successpassenger", {
@@ -53,9 +84,7 @@ const io = require("socket.io")(httpServer, {
     })
 
     socket.on("join_room", (data) => {
-      console.log(data)
       socket.join(data.room);
-      console.log(`User with ID: ${socket.id} joined room: ${data.room}`);
     });
   
 

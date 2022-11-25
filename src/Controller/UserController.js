@@ -10,10 +10,8 @@ const {decodeToken} = require('../Middlewares/decodeToken')
 const postUser = async (req = request, res = response) => {
 
     try {
-        const { password, username, email, phone  } = req.body;   
+        const { password, username, email, phone, gender  } = req.body;   
         console.log(req.body) 
-        console.log(req.params)
-        console.log(req.headers)
         
         const salt = bcrypt.genSaltSync();
         const pass = bcrypt.hashSync( password, salt );
@@ -40,7 +38,7 @@ const postUser = async (req = request, res = response) => {
             });
         } else {
             await conn.query(`INSERT INTO Passengers ( Fullname, 
-                Email, Password, Phone ) VALUE (?,?,?, ?);`, [ username, email, pass, phone ]);
+                Email, Password, Phone, Gender ) VALUE (?,?,?, ?, ?);`, [ username, email, pass, phone, gender ]);
 
             conn.end();
 

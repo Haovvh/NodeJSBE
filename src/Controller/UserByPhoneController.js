@@ -16,7 +16,7 @@ const postUserbyPhone = async (req = request, res = response) => {
 
     try {
         console.log("post User")
-        const { Fullname, Phone, Date_of_birth } = req.body;
+        const { Fullname, Phone, Date_of_birth, gender } = req.body;
         console.log(req.body)
         const conn = await MySql(); 
 
@@ -25,9 +25,9 @@ const postUserbyPhone = async (req = request, res = response) => {
         console.log(hasPhone[0])
         if( hasPhone[0].length == 0 ){
             
-            await conn.query(`INSERT INTO Users (Phone, Fullname, Date_of_birth)
-            VALUES (?, ? ,?)
-            `, [ Phone,  Fullname, Date_of_birth ]);
+            await conn.query(`INSERT INTO Users (Phone, Fullname, Date_of_birth, gender)
+            VALUES (?, ? ,?, ?)
+            `, [ Phone,  Fullname, Date_of_birth, gender ]);
             conn.end();
             console.log("True")
             return res.json({                
@@ -182,6 +182,7 @@ const getUserbyPhone = async (req = request, res = response ) => {
         } else {
             return res.json({
                 resp: false,
+                data: rows[0][0],
                 message: 'No History',
             })
         }
