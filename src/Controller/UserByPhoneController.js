@@ -6,8 +6,8 @@ const MySql = require('../DB/MySql');
 const jwt = require('jsonwebtoken');
 const {decodeToken} = require('../Middlewares/decodeToken');
 
-Date.prototype.addHours  = function(hours) {
-    this.setTime(this.getTime() + parseInt(hours*60*60*1000));
+Date.prototype.addHours  = function() {
+    this.setTime(this.getTime() );
     return this;
 };
 
@@ -166,7 +166,7 @@ const getUserbyPhone = async (req = request, res = response ) => {
         console.log(countPlace[0])
         if(address[0].length > 0 && countPlace[0] > 0){
             for(let i =0 ; i < address[0].length; i++) {
-                address[0][i].start_time.addHours(7);
+                address[0][i].start_time.addHours();
     
                 address[0][i].start_time = address[0][i].start_time.toLocaleString();
             }

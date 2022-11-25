@@ -7,8 +7,8 @@ const {decodeToken} = require('../Middlewares/decodeToken')
 const jwt = require('jsonwebtoken');
 const { get } = require('http');
 
-Date.prototype.addHours  = function(hours) {
-    this.setTime(this.getTime() + parseInt(hours*60*60*1000));
+Date.prototype.addHours  = function() {
+    this.setTime(this.getTime() );
     return this;
 };
 
@@ -227,11 +227,11 @@ const getAllJourneyByPassengerID = async (req = request, res = response) => {
         `, [Passenger_ID]);        
         conn.end();
 
-
+        
         if( getalljourney[0].length !== 0 ){ 
             for(let i =0 ; i<getalljourney[0].length; i++) {
-                getalljourney[0][i].start_time.addHours(7);
-                getalljourney[0][i].finish_time.addHours(7);
+                getalljourney[0][i].start_time.addHours();
+                getalljourney[0][i].finish_time.addHours();
     
                 getalljourney[0][i].start_time = getalljourney[0][i].start_time.toLocaleString();
                 getalljourney[0][i].finish_time = getalljourney[0][i].finish_time.toLocaleString();
@@ -274,19 +274,19 @@ const getAllJourneyByDriverID = async (req = request, res = response) => {
         WHERE journeys.Driver_ID = ? AND Status = 'Success'         
         `, [Driver_ID]);        
         conn.end();
-        console.log( getalljourney[0])
         
         
         
+        console.log( getalljourney[0][0])
         if( getalljourney[0].length !== 0 ){     
             for(let i =0 ; i<getalljourney[0].length; i++) {
-                getalljourney[0][i].start_time.addHours(7);
-                getalljourney[0][i].finish_time.addHours(7);
+                getalljourney[0][i].start_time.addHours();
+                getalljourney[0][i].finish_time.addHours();
     
                 getalljourney[0][i].start_time = getalljourney[0][i].start_time.toLocaleString();
                 getalljourney[0][i].finish_time = getalljourney[0][i].finish_time.toLocaleString();
             }
-
+            console.log( getalljourney[0])
             return res.json({
                 resp: true,
                 message : 'Get journey is success!',
@@ -328,12 +328,13 @@ const getAllJourneyBySupportStaff = async (req = request, res = response) => {
         
         if( getalljourney[0].length !== 0 ){       
             for(let i =0 ; i<getalljourney[0].length; i++) {
-                getalljourney[0][i].start_time.addHours(7);
-                getalljourney[0][i].finish_time.addHours(7);
+                getalljourney[0][i].start_time.addHours();
+                getalljourney[0][i].finish_time.addHours();
     
                 getalljourney[0][i].start_time = getalljourney[0][i].start_time.toLocaleString();
                 getalljourney[0][i].finish_time = getalljourney[0][i].finish_time.toLocaleString();
             }
+            console.log(getalljourney[0])
             return res.json({
                 resp: true,
                 message : 'Get journey is success!',
