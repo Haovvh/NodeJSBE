@@ -369,23 +369,28 @@ const getAllJourneyByPassenger = async (req = request, res = response) => {
         FROM journeys 
         WHERE Passenger_ID = ? AND   Status = 'Success' 
         GROUP BY origin_Id 
-        UNION
-        SELECT destination_Fulladdress as origin_Fulladdress, COUNT(destination_Id) AS Count
+        ORDER BY COUNT DESC
+        LIMIT 5
+        `, [ Passenger_ID]);      
+        const destination = await conn.query(`
+        
+        SELECT destination_Fulladdress as destination_Fulladdress, COUNT(destination_Id) AS Count
         FROM journeys 
         WHERE Passenger_ID = ? AND   Status = 'Success' 
         GROUP BY destination_Id
         ORDER BY COUNT DESC
         LIMIT 5
-        `, [Passenger_ID, Passenger_ID]);        
+        `, [ Passenger_ID]);   
         conn.end();
 
         console.log(getalljourney[0])
-        if( getalljourney[0].length !== 0 ){        
+        if( getalljourney[0].length > 0  && destination[0].length > 0){        
 
             return res.json({
                 resp: true,
                 message : 'Get journey is success!',
-                data: getalljourney[0]
+                origin: getalljourney[0],
+                destination: destination[0]
             });
         
         } else {
