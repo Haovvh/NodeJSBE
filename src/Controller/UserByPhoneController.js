@@ -153,12 +153,12 @@ const getUserbyPhone = async (req = request, res = response ) => {
         SELECT origin_Fulladdress, COUNT(origin_Id) AS Count
         FROM journeys 
         WHERE User_ID = ? AND   Status = 'Success' 
-        GROUP BY origin_Id 
+        GROUP BY origin_Fulladdress 
         union
         SELECT destination_Fulladdress, COUNT(destination_Id) AS Count
         FROM journeys 
         WHERE User_ID = ? AND   Status = 'Success' 
-        GROUP BY destination_Id
+        GROUP BY destination_Fulladdress
         ORDER BY COUNT DESC
         LIMIT 5
         `,[parseInt(rows[0][0].User_ID), parseInt(rows[0][0].User_ID)])

@@ -368,8 +368,8 @@ const getAllJourneyByPassenger = async (req = request, res = response) => {
         SELECT origin_Fulladdress as origin_Fulladdress, COUNT(origin_Id) AS Count
         FROM journeys 
         WHERE Passenger_ID = ? AND   Status = 'Success' 
-        GROUP BY origin_Id 
-        ORDER BY COUNT DESC
+        GROUP BY origin_Fulladdress 
+        ORDER BY Count DESC
         LIMIT 5
         `, [ Passenger_ID]);      
         const destination = await conn.query(`
@@ -377,7 +377,7 @@ const getAllJourneyByPassenger = async (req = request, res = response) => {
         SELECT destination_Fulladdress as destination_Fulladdress, COUNT(destination_Id) AS Count
         FROM journeys 
         WHERE Passenger_ID = ? AND   Status = 'Success' 
-        GROUP BY destination_Id
+        GROUP BY destination_Fulladdress
         ORDER BY COUNT DESC
         LIMIT 5
         `, [ Passenger_ID]);   
