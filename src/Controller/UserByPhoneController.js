@@ -110,7 +110,6 @@ const getUserbyPhone = async (req = request, res = response ) => {
         
         const role = decodeToken(req.header('x-access-token'), process.env.KEY_JWTOKEN).role
         if (!role.includes('ROLE_SUPPORTSTAFF')) {
-            console.log("Không có quyền Support Staff")
             return res.json( {
                 resp: false,
                 message: 'No Support Staff',
@@ -125,10 +124,10 @@ const getUserbyPhone = async (req = request, res = response ) => {
         if(rows[0].length === 0) {
             console.log("No user")
             await conn.end()
-            return res.json( {
+            return res.status(401).json({
                 resp: false,
                 message: 'No Users'
-            })            
+            });          
         }
         const address = await conn.query(`SELECT start_time, origin_Fulladdress, destination_Fulladdress 
         FROM journeys 
